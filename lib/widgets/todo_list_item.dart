@@ -15,28 +15,30 @@ class TodoListItem extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2.0),
       child: Slidable(
-        actionPane: const SlidableStrechActionPane(),
-        secondaryActions: [
-          IconSlideAction(
-            color: Colors.red,
-            icon: Icons.delete,
-            caption: 'Deletar',
-            onTap: () {
-              onDelete(task);
-            },
-          )
-        ],
-        actionExtentRatio: 0.25,
-        actions: [
-          IconSlideAction(
-            color: Colors.green,
-            icon: Icons.done,
-            caption: 'Concluido',
-            onTap: () {
-              onDone(task);
-            },
-          )
-        ],
+        startActionPane: ActionPane(
+          motion: const DrawerMotion(),
+          extentRatio: 0.25,
+          children: [
+            SlidableAction(
+              label: 'Archive',
+              backgroundColor: Colors.blue,
+              icon: Icons.archive,
+              onPressed: (context) {},
+            ),
+          ],
+        ),
+        endActionPane: ActionPane(
+          motion: const DrawerMotion(),
+          extentRatio: 0.25,
+          children: [
+            SlidableAction(
+              label: 'Delete',
+              backgroundColor: Colors.red,
+              icon: Icons.delete,
+              onPressed: (context) {},
+            ),
+          ],
+        ),
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
