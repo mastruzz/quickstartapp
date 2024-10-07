@@ -64,7 +64,7 @@ class TodoListItem extends StatelessWidget {
   }
 
   String getFormatedDate() {
-    return DateFormat('dd/MM/yyyy - HH:mm:ss').format(task.date);
+    return DateFormat('dd/MM/yyyy - HH:mm:ss').format(task.doneDate);
   }
 
   Color getTaskBackgroudColor(TaskState taskState) {

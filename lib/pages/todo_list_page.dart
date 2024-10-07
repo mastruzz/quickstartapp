@@ -1,35 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:runtask/models/task_model.dart';
-import 'package:animated_floating_buttons/animated_floating_buttons.dart';
-import '../widgets/todo_list_item.dart';
+import '../widgets/todo_list_item_widget.dart';
 
 class TodoListPage extends StatefulWidget {
-  const TodoListPage({super.key});
+  const TodoListPage({super.key, required this.taskList});
+
+  final List<TaskModel> taskList;
 
   @override
-  State<TodoListPage> createState() => _TodoListPageState();
+  State<TodoListPage> createState() => _TodoListPageState(taskList);
 }
 
 class _TodoListPageState extends State<TodoListPage> {
   final TextEditingController taskTextField = TextEditingController();
-  final GlobalKey<AnimatedFloatingActionButtonState> key =
-      GlobalKey<AnimatedFloatingActionButtonState>();
 
-  List<TaskModel> taskList = [];
+  _TodoListPageState(this.taskList);
+
+ final List<TaskModel> taskList;
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        floatingActionButton: AnimatedFloatingActionButton(
-            fabButtons: <Widget>[
-              addNewTask(),
-              float2(),
-            ],
-            key: key,
-            colorStartAnimation: Colors.blue,
-            colorEndAnimation: Colors.red,
-            animatedIconData: AnimatedIcons.menu_close),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(16),
@@ -93,7 +85,7 @@ class _TodoListPageState extends State<TodoListPage> {
                           padding: const EdgeInsets.all(10),
                         ),
                         child: const Text(
-                          "Limpa tudo",
+                          "Limpar tudo",
                           style: TextStyle(color: Colors.white),
                         ),
                       )
@@ -109,12 +101,22 @@ class _TodoListPageState extends State<TodoListPage> {
   }
 
   void showAddTaskDialog() {
-      showDialog(context: context, builder: (context) => Container(
-        child: AlertDialog(
-          title: Text("Qual é sua nova tarefa?"),
-          content: getAddTaskRow(),
-        ),
-      ));
+    showDialog(
+      context: context,
+      builder: (context) => Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Dialog(
+            insetPadding: EdgeInsets.symmetric(horizontal: 8), // Padding lateral de 8 pixels
+            child: AlertDialog(
+              title: Text("Qual é sua nova tarefa?"),
+              content: getAddTaskRow(),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   void showTaskDeleteConfirmationDialog() {
@@ -160,49 +162,52 @@ class _TodoListPageState extends State<TodoListPage> {
   }
 
   Widget getAddTaskRow() {
-    var hintText = "Ex. Limpar o lustre.";
-
-    return Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Expanded(
-            flex: 2,
-            child: TextField(
-              controller: taskTextField,
-              decoration: InputDecoration(
-                  border: const OutlineInputBorder(),
-                  labelText: "Adicione uma tarefa",
-                  hintText: hintText),
+    return Column(
+      children: [
+        TextField(
+          controller: taskTextField,
+          decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: "Adicione uma tarefa",
+              hintText: "Ex. Limpar o lustre."),
+        ),
+        const SizedBox(height: 8),
+        TextField(
+          controller: taskTextField,
+          decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: "Adiciona uma descrição",
+              hintText: "Ex. Pedido do josé"),
+        ),
+        const SizedBox(height: 8),
+        ElevatedButton(
+          onPressed: () {
+            setState(() {
+              if (taskTextField.text.isEmpty) {
+                return;
+              }
+              TaskModel task = TaskModel(
+                  taskTextField.text, DateTime.now(), TaskState.pending, 'nada');
+              taskList.add(task);
+              taskTextField.clear();
+            });
+          },
+          style: ElevatedButton.styleFrom(
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(8)),
             ),
+            enableFeedback: true,
+            backgroundColor: Colors.lightBlueAccent,
+            padding: const EdgeInsets.all(16),
           ),
-          const SizedBox(width: 8),
-          ElevatedButton(
-            onPressed: () {
-              setState(() {
-                if (taskTextField.text.isEmpty) {
-                  return;
-                }
-                TaskModel task = TaskModel(taskTextField.text,
-                    DateTime.now(), TaskState.pending);
-                taskList.add(task);
-                taskTextField.clear();
-              });
-            },
-            style: ElevatedButton.styleFrom(
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(8)),
-              ),
-              backgroundColor: Colors.lightBlueAccent,
-              padding: const EdgeInsets.all(16),
-            ),
-            child: const Icon(
-              Icons.add,
-              size: 30,
-              color: Colors.white,
-            ),
+          child: const Icon(
+            Icons.add,
+            size: 30,
+            color: Colors.white,
           ),
-        ],
-      );
+        ),
+      ],
+    );
   }
 
   void onDelete(TaskModel task) {
@@ -216,7 +221,7 @@ class _TodoListPageState extends State<TodoListPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
           content: Text(
-            "Tarefa \"${task.title}\" foi removida com sucesso!",
+            "Tarefa \"${task.title}\" foi removida!",
             style: TextStyle(color: Colors.blueGrey.shade900),
           ),
           backgroundColor: Colors.grey.shade200,
@@ -273,8 +278,10 @@ class _TodoListPageState extends State<TodoListPage> {
       backgroundColor: Colors.blue,
       heroTag: "Adicionar tarefa",
       tooltip: 'Adicionar tarefa',
-      child: const Icon(Icons.add,
-      color: Colors.white,),
+      child: const Icon(
+        Icons.add,
+        color: Colors.white,
+      ),
     );
   }
 
@@ -284,8 +291,10 @@ class _TodoListPageState extends State<TodoListPage> {
       backgroundColor: Colors.blue,
       heroTag: "home",
       tooltip: 'Home',
-      child: const Icon(Icons.home,
-        color: Colors.white,),
+      child: const Icon(
+        Icons.home,
+        color: Colors.white,
+      ),
     );
   }
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:runtask/pages/todo_list_page.dart';
+import 'package:runtask/pages/home_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -10,6 +10,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: TodoListPage());
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'QuickStart',
+      theme: ThemeData(
+        useMaterial3: true,
+        primarySwatch: Colors.green,
+      ),
+      home: const HomePage(),
+    );
   }
 }
