@@ -30,7 +30,7 @@ class _LoginPageState extends State<LoginPage> {
       ],
     );
 
-    final titlePage = Text('Entrou', style: TextStyle(fontSize: 32, color: Color(0xD9515151)),);
+    final titlePage = Text('Entrar', style: TextStyle(fontSize: 32, color: Color(0xD9515151)),);
 
     final emailField = TextFormField(
       keyboardType: TextInputType.emailAddress,
@@ -82,6 +82,20 @@ class _LoginPageState extends State<LoginPage> {
         border: OutlineInputBorder( // Borda padrão
           borderSide: BorderSide(color: Colors.transparent), // Remove a borda padrão
           borderRadius: BorderRadius.circular(10.0),
+        ),
+      ),
+    );
+
+    final forgotPassword = Container(
+      width: double.infinity,
+      child: Text(
+        'Esqueci a senha',
+        textAlign: TextAlign.right, // Alinha o texto à direita
+        style: TextStyle(
+            fontSize: 18,
+            decoration: TextDecoration.underline,
+            decorationColor: Color(0xFF4E7987),
+            color: Color(0xFF4E7987)
         ),
       ),
     );
@@ -148,7 +162,9 @@ class _LoginPageState extends State<LoginPage> {
                   emailField,
                   SizedBox(height: 15.0),
                   passwordField,
-                  SizedBox(height: 28.0),
+                  SizedBox(height: 6.0),
+                  forgotPassword,
+                  SizedBox(height: 6.0),
                   loginButton,
                   SizedBox(height: 5.0),
                   singUpButton
