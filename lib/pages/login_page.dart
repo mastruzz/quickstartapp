@@ -8,27 +8,84 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
-    final titlePage = Text('Entrou');
+    final logoImage = Row(
+      mainAxisAlignment: MainAxisAlignment.center, // Centraliza o conteúdo na horizontal
+      children: <Widget>[
+        Image.asset(
+          'lib/assets/images/logo.png', // Caminho da imagem no assets
+          width: 100, // Largura da imagem
+          height: 100, // Altura da imagem
+        ),
+        SizedBox(width: 8.0), // Espaçamento entre a imagem e o texto
+        Text(
+          'Quick\nStart', // Texto com quebra de linha
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 36.0, // Tamanho do texto
+            fontWeight: FontWeight.normal,
+            fontFamily: 'Limelight-Regular',
+            color: Color(0xFF9C9C9C)
+          ),
+        ),
+      ],
+    );
+
+    final titlePage = Text('Entrou', style: TextStyle(fontSize: 32, color: Color(0xD9515151)),);
 
     final emailField = TextFormField(
       keyboardType: TextInputType.emailAddress,
       autofocus: false,
+      cursorColor: Colors.black,
       decoration: InputDecoration(
-        hintText: 'Email',
+        labelText: "Email",
+        labelStyle: TextStyle(
+          color: Colors.grey, // Cor da label quando não está focado
+        ),
+        fillColor: Colors.white, // Cor de fundo do input
+        filled: true, // Habilita a cor de fundo do input
         contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
+        focusedBorder: OutlineInputBorder( // Borda quando o campo está focado
+          borderSide: BorderSide(color: Colors.transparent), // Removendo a cor da borda ao focar
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        enabledBorder: OutlineInputBorder( // Borda quando não está focado
+          borderSide: BorderSide(color: Colors.transparent), // Remove a borda ao não focar
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        border: OutlineInputBorder( // Borda padrão
+          borderSide: BorderSide(color: Colors.transparent), // Remove a borda padrão
+          borderRadius: BorderRadius.circular(10.0),
+        ),
       ),
     );
 
     final passwordField = TextFormField(
-      autofocus: false,
       obscureText: true,
+      autofocus: false,
+      cursorColor: Colors.black,
       decoration: InputDecoration(
-        hintText: 'Senha',
+        labelText: "Senha",
+        labelStyle: TextStyle(
+          color: Colors.grey, // Cor da label quando não está focado
+        ),
+        fillColor: Colors.white, // Cor de fundo do input
+        filled: true, // Habilita a cor de fundo do input
         contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
+        focusedBorder: OutlineInputBorder( // Borda quando o campo está focado
+          borderSide: BorderSide(color: Colors.transparent), // Removendo a cor da borda ao focar
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        enabledBorder: OutlineInputBorder( // Borda quando não está focado
+          borderSide: BorderSide(color: Colors.transparent), // Remove a borda ao não focar
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        border: OutlineInputBorder( // Borda padrão
+          borderSide: BorderSide(color: Colors.transparent), // Remove a borda padrão
+          borderRadius: BorderRadius.circular(10.0),
+        ),
       ),
     );
+
 
     final loginButton = ElevatedButton(
       style: ElevatedButton.styleFrom(
@@ -37,9 +94,12 @@ class _LoginPageState extends State<LoginPage> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12), // Formato arredondado
         ),
-        padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12), // Espaçamento interno
+        padding: EdgeInsets.symmetric(horizontal: 32, vertical: 9), // Espaçamento interno
       ),
-      child: Text('Login'),
+      child: Text(
+          'Login',
+          style: TextStyle(color: Color(0x7D000000), fontSize: 20)
+      ),
       onPressed: () {
         Text('Entrou');
       },
@@ -47,16 +107,16 @@ class _LoginPageState extends State<LoginPage> {
 
     final singUpButton = ElevatedButton(
       style: OutlinedButton.styleFrom(
-        side: BorderSide(color: Color(0xFF7F7765), width: 2), // Cor e largura da borda
+        side: BorderSide(color: Color(0xFF7F7765), width: 3), // Cor e largura da borda
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12), // Bordas arredondadas
         ),
-        padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16), // Espaçamento interno
-        backgroundColor: Colors.transparent,
+        padding: EdgeInsets.symmetric(horizontal: 32, vertical: 9), // Espaçamento interno
+        backgroundColor: Color(0xCFF4DFB1),
       ),
       child: Text(
           'Registre-se',
-          style: TextStyle(color: Color(0xFF7F7765)),
+          style: TextStyle(color: Color(0x6B060606), fontSize: 20),
       ),
       onPressed: () {
         Text('Entrou');
@@ -69,14 +129,17 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            Spacer(flex: 2),
+            logoImage,
+            Spacer(flex: 1),
             titlePage,
-            SizedBox(height: 16.0),
             Container(
               width: MediaQuery.of(context).size.width * 0.8,
-              height: MediaQuery.of(context).size.width * 0.8,
+              height: MediaQuery.of(context).size.width * 0.66,
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.blueAccent),
-                borderRadius: BorderRadius.circular(8.0),
+                color: Color(0xCFF4DFB1),
+                border: Border.all(color: Color(0x61D8D1E4), width: 5),
+                borderRadius: BorderRadius.circular(20.0),
               ),
               child: ListView(
                 shrinkWrap: true,
@@ -92,6 +155,7 @@ class _LoginPageState extends State<LoginPage> {
                 ],
               ),
             ),
+            Spacer(flex: 3),
           ],
         ),
       ),

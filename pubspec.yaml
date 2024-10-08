@@ -62,7 +62,12 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
-  # To add assets to your application, add an assets section, like this:
+  assets:
+    - lib/assets/images/logo.png
+  fonts:
+    - family: Limelight-Regular
+      fonts:
+        - asset: lib/assets/fonts/Limelight-Regular.ttf
   # assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
