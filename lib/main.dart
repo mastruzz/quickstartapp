@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:runtask/pages/login_page.dart';
+import 'package:runtask/pages/sing_up_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -10,6 +11,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: LoginPage());
+    return MaterialApp(home: SingUpPage());
   }
 }
