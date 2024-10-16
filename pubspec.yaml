@@ -1,5 +1,5 @@
-name: runtask
-description: "runtask"
+name: quickstart
+description: "quickstart"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -31,13 +31,14 @@ dependencies:
   flutter:
     sdk: flutter
 
-
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.6
   intl:
-  flutter_slidable: ^0.6.0
+  flutter_slidable: ^3.1.1
   stylish_bottom_bar: ^1.1.0
+  flutter_launcher_icons: "^0.13.1"
+  #  standard_searchbar: ^2.0.0
 #  slide_popup_dialog_null_safety: ^1.0.0
 
 dev_dependencies:
@@ -50,7 +51,6 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^3.0.0
-
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

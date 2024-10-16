@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:runtask/models/task_model.dart';
-import '../widgets/todo_list_item_widget.dart';
+import 'package:quickstart/models/task_model.dart';
+import '../widgets/task_list_item_widget.dart';
 
 class TodoListPage extends StatefulWidget {
   const TodoListPage({super.key, required this.taskList});
@@ -40,7 +40,7 @@ class _TodoListPageState extends State<TodoListPage> {
                         Row(
                           children: [
                             Expanded(
-                              child: TodoListItem(
+                              child: TaskListItem(
                                   task: task,
                                   onDelete: onDelete,
                                   onDone: onDone),

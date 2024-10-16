@@ -1,11 +1,11 @@
 {
-    "name": "runtask",
-    "short_name": "runtask",
+    "name": "quickstart",
+    "short_name": "quickstart",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "runtask",
+    "background_color": "#hexcode",
+    "theme_color": "#hexcode",
+    "description": "quickstart",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

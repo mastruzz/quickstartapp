@@ -1,4 +1,4 @@
-package com.br.runtask.runtask
+package com.br.quickstart.quickstart
 
 import io.flutter.embedding.android.FlutterActivity
 

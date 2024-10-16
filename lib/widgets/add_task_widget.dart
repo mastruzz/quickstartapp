@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:runtask/models/task_model.dart';
+import 'package:quickstart/models/task_model.dart';
 
 class AddTaskWidget extends StatefulWidget {
   AddTaskWidget({super.key, required this.addTask});

@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:runtask/models/task_model.dart';
-import 'package:runtask/pages/todo_list_page.dart';
-import 'package:runtask/widgets/add_task_widget.dart';
+import 'package:quickstart/models/task_model.dart';
+import 'package:quickstart/pages/settings_page.dart';
+import 'package:quickstart/pages/task_list_page.dart';
+import 'package:quickstart/widgets/add_task_widget.dart';
 import 'package:stylish_bottom_bar/stylish_bottom_bar.dart';
 
 class HomePage extends StatefulWidget {
@@ -13,9 +14,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   List<TaskModel> taskList = [];
-
   int selected = 0;
   final controller = PageController();
 
@@ -47,26 +46,27 @@ class _HomePageState extends State<HomePage> {
               Icons.settings,
             ),
             selectedIcon: const Icon(
-              Icons.settings_applications,
+              Icons.settings,
             ),
             title: const Text(
               'Configuração',
             ),
           ),
         ],
+        iconSpace: 5.0,
         hasNotch: true,
         currentIndex: selected,
         notchStyle: NotchStyle.square,
         onTap: (index) {
-          if (index == selected) return;
-          controller.jumpToPage(index);
+          controller.animateToPage(index,
+              duration: Duration(milliseconds: 300),
+              curve: Curves.easeInOut);
           setState(() {
             selected = index;
           });
         },
       ),
       floatingActionButton: FloatingActionButton(
-
         onPressed: () {
           setState(() {
             _showDialog();
@@ -78,14 +78,23 @@ class _HomePageState extends State<HomePage> {
           color: Colors.green,
         ),
       ),
-      floatingActionButtonLocation:
-          FloatingActionButtonLocation.endFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       body: SafeArea(
         child: PageView(
           controller: controller,
+          onPageChanged: (index) {
+            // Atualiza o índice 'selected' quando deslizar para a direita/esquerda
+            setState(() {
+              selected = index;
+            });
+          },
           children: [
-            Center(child: TodoListPage(taskList: taskList,)),
-            const Center(child: Text('Configuração')),
+            Center(
+              child: TaskListPage(
+                taskList: taskList,
+              ),
+            ),
+            const Center(child: SettingsPage()),
           ],
         ),
       ),
@@ -115,7 +124,8 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Container( // Pill
+                  Container(
+                    // Pill
                     width: 50,
                     height: 5,
                     margin: const EdgeInsets.symmetric(vertical: 10),
