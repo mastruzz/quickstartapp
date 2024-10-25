@@ -1,51 +1,99 @@
 import 'package:flutter/material.dart';
-import '../sqlite/sqlite_repository.dart';
+import 'package:quickstart/pages/home_page.dart';
+import 'package:quickstart/pages/sing_up_page.dart';
+import '../sqlite/sqlite_repository.dart'; // Importa o repositório do banco de dados
 
 class LoginPage extends StatefulWidget {
-  static String tag = 'login_page';
-  _LoginPageState createState() => new _LoginPageState();
+  LoginPage({super.key, required this.dbHelper});
+
+  DatabaseConfiguration dbHelper;
+
+  static String tag = '/login';
+
+  @override
+  _LoginPageState createState() => _LoginPageState(dbHelper);
 }
 
 class _LoginPageState extends State<LoginPage> {
-  @override
-  Widget build(BuildContext context) {
-    final DatabaseConfiguration _dbHelper = DatabaseConfiguration();
-    final TextEditingController _emailController = TextEditingController();
-    final TextEditingController _passwordController = TextEditingController();
+  _LoginPageState(this._dbHelper);
 
-    Future<void> _login() async {
-      print('chegou na funçao');
-      if (_emailController.text.isNotEmpty &&
-          _passwordController.text.isNotEmpty) {
-        print('chegou aqui');
-        final teste = await _dbHelper.getCredentials(_emailController.text, _passwordController.text);
-        print('o usuario vai logar ?: $teste');
-      }
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final DatabaseConfiguration _dbHelper;
+
+  bool _isLoading = false;
+  String? _errorMessage;
+
+
+  Future<void> _login() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    String email = _emailController.text.trim();
+    String password = _passwordController.text.trim();
+
+    // Verifica se o email e senha são válidos
+    if (email.isEmpty || password.isEmpty) {
+      setState(() {
+        _isLoading = false;
+      });
+      _showSnackbar("Por favor, preencha todos os campos.");
+      return;
     }
 
+    // Verifica o login no banco de dados
+    bool loginSuccess = await _dbHelper.loginUser(email, password);
+
+    if (loginSuccess) {
+      // Redireciona para a tela principal ou tela de minha conta
+      Navigator.pushReplacementNamed(context, HomePage.tag);
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+      _showSnackbar("Email ou senha incorretos.");
+    }
+  }
+
+  void _showSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final logoImage = Row(
-      mainAxisAlignment: MainAxisAlignment.center, // Centraliza o conteúdo na horizontal
+      mainAxisAlignment: MainAxisAlignment.center,
+      // Centraliza o conteúdo na horizontal
       children: <Widget>[
         Image.asset(
-          'lib/assets/images/logo.png', // Caminho da imagem no assets
+          'assets/images/logo.png', // Caminho da imagem no assets
           width: 100, // Largura da imagem
           height: 100, // Altura da imagem
         ),
-        SizedBox(width: 8.0), // Espaçamento entre a imagem e o texto
-        Text(
+        const SizedBox(width: 8.0), // Espaçamento entre a imagem e o texto
+        const Text(
           'Quick\nStart', // Texto com quebra de linha
           textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: 36.0, // Tamanho do texto
-            fontWeight: FontWeight.normal,
-            fontFamily: 'Limelight-Regular',
-            color: Color(0xFF9C9C9C)
-          ),
+              fontSize: 36.0, // Tamanho do texto
+              fontWeight: FontWeight.normal,
+              fontFamily: 'Limelight-Regular',
+              color: Color(0xFF9C9C9C)),
         ),
       ],
     );
 
-    final titlePage = Text('Entrar', style: TextStyle(fontSize: 32, color: Color(0xD9515151)),);
+    final titlePage = Text(
+      'Entrar',
+      style: TextStyle(fontSize: 32, color: Color(0xD9515151)),
+    );
 
     final emailField = TextFormField(
       keyboardType: TextInputType.emailAddress,
@@ -57,19 +105,15 @@ class _LoginPageState extends State<LoginPage> {
         labelStyle: TextStyle(
           color: Colors.grey, // Cor da label quando não está focado
         ),
-        fillColor: Colors.white, // Cor de fundo do input
+        fillColor: Colors.white,
         filled: true, // Habilita a cor de fundo do input
         contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
-        focusedBorder: OutlineInputBorder( // Borda quando o campo está focado
-          borderSide: BorderSide(color: Colors.transparent), // Removendo a cor da borda ao focar
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.transparent), // Borda ao focar
           borderRadius: BorderRadius.circular(10.0),
         ),
-        enabledBorder: OutlineInputBorder( // Borda quando não está focado
-          borderSide: BorderSide(color: Colors.transparent), // Remove a borda ao não focar
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-        border: OutlineInputBorder( // Borda padrão
-          borderSide: BorderSide(color: Colors.transparent), // Remove a borda padrão
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.transparent), // Borda sem foco
           borderRadius: BorderRadius.circular(10.0),
         ),
       ),
@@ -85,19 +129,15 @@ class _LoginPageState extends State<LoginPage> {
         labelStyle: TextStyle(
           color: Colors.grey, // Cor da label quando não está focado
         ),
-        fillColor: Colors.white, // Cor de fundo do input
+        fillColor: Colors.white,
         filled: true, // Habilita a cor de fundo do input
         contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
-        focusedBorder: OutlineInputBorder( // Borda quando o campo está focado
-          borderSide: BorderSide(color: Colors.transparent), // Removendo a cor da borda ao focar
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.transparent), // Borda ao focar
           borderRadius: BorderRadius.circular(10.0),
         ),
-        enabledBorder: OutlineInputBorder( // Borda quando não está focado
-          borderSide: BorderSide(color: Colors.transparent), // Remove a borda ao não focar
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-        border: OutlineInputBorder( // Borda padrão
-          borderSide: BorderSide(color: Colors.transparent), // Remove a borda padrão
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.transparent), // Borda sem foco
           borderRadius: BorderRadius.circular(10.0),
         ),
       ),
@@ -105,56 +145,62 @@ class _LoginPageState extends State<LoginPage> {
 
     final forgotPassword = Container(
       width: double.infinity,
-      child: Text(
+      child: const Text(
         'Esqueci a senha',
         textAlign: TextAlign.right, // Alinha o texto à direita
         style: TextStyle(
             fontSize: 18,
             decoration: TextDecoration.underline,
             decorationColor: Color(0xFF4E7987),
-            color: Color(0xFF4E7987)
-        ),
+            color: Color(0xFF4E7987)),
       ),
     );
-
 
     final loginButton = ElevatedButton(
       style: ElevatedButton.styleFrom(
         backgroundColor: Color(0xCF86E1AB), // Cor de fundo
-        foregroundColor: Colors.white,    // Cor do texto
+        foregroundColor: Colors.white, // Cor do texto
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12), // Formato arredondado
         ),
-        padding: EdgeInsets.symmetric(horizontal: 32, vertical: 9), // Espaçamento interno
+        padding: EdgeInsets.symmetric(
+            horizontal: 32, vertical: 9), // Espaçamento interno
       ),
-      child: Text(
-          'Login',
-          style: TextStyle(color: Color(0x7D000000), fontSize: 20)
-      ),
+      child: Text('Login',
+          style: TextStyle(color: Color(0x7D000000), fontSize: 20)),
       onPressed: () {
         _login();
       },
     );
 
     final singUpButton = ElevatedButton(
-      style: OutlinedButton.styleFrom(
-        side: BorderSide(color: Color(0xFF7F7765), width: 3), // Cor e largura da borda
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12), // Bordas arredondadas
+        style: OutlinedButton.styleFrom(
+          side: BorderSide(color: Color(0xFF7F7765), width: 3),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12), // Bordas arredondadas
+          ),
+          padding: EdgeInsets.symmetric(horizontal: 32, vertical: 9),
+          backgroundColor: Color(0xCFF4DFB1),
         ),
-        padding: EdgeInsets.symmetric(horizontal: 32, vertical: 9), // Espaçamento interno
-        backgroundColor: Color(0xCFF4DFB1),
-      ),
-      child: Text(
+        child: Text(
           'Registre-se',
           style: TextStyle(color: Color(0x6B060606), fontSize: 20),
-      ),
-      onPressed: () {
-        Text('Entrou');
-      },
-    );
+        ),
+        onPressed: () {
+          Navigator.pushReplacementNamed(context, SingUpPage.tag);
+        });
 
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () {
+            Navigator.pushReplacementNamed(context, HomePage.tag);
+          },
+        ),
+      ),
       backgroundColor: Colors.white,
       body: Center(
         child: Column(
@@ -174,7 +220,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               child: ListView(
                 shrinkWrap: true,
-                padding: EdgeInsets.only(top: 24.0,left: 24.0, right: 24.0),
+                padding: EdgeInsets.only(top: 24.0, left: 24.0, right: 24.0),
                 children: <Widget>[
                   emailField,
                   SizedBox(height: 15.0),
@@ -193,5 +239,12 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 }

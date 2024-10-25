@@ -3,17 +3,26 @@ import 'package:flutter/material.dart';
 import 'package:quickstart/models/task_model.dart';
 import 'package:quickstart/pages/settings_page.dart';
 import 'package:quickstart/pages/task_list_page.dart';
+import 'package:quickstart/sqlite/sqlite_repository.dart';
 import 'package:quickstart/widgets/add_task_widget.dart';
 import 'package:stylish_bottom_bar/stylish_bottom_bar.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  HomePage({super.key, required this.dbHelper});
+
+  DatabaseConfiguration dbHelper;
+
+  static String tag = '/home';
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<HomePage> createState() => _HomePageState(dbHelper);
 }
 
 class _HomePageState extends State<HomePage> {
+  _HomePageState(this.dbHelper);
+
+  DatabaseConfiguration dbHelper;
+
   List<TaskModel> taskList = [];
   int selected = 0;
   final controller = PageController();
@@ -37,7 +46,7 @@ class _HomePageState extends State<HomePage> {
         items: [
           BottomBarItem(
             icon: const Icon(
-              Icons.task_sharp,
+              Icons.list,
             ),
             title: const Text('Tarefas'),
           ),
@@ -59,8 +68,7 @@ class _HomePageState extends State<HomePage> {
         notchStyle: NotchStyle.square,
         onTap: (index) {
           controller.animateToPage(index,
-              duration: Duration(milliseconds: 300),
-              curve: Curves.easeInOut);
+              duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
           setState(() {
             selected = index;
           });
@@ -94,7 +102,10 @@ class _HomePageState extends State<HomePage> {
                 taskList: taskList,
               ),
             ),
-            const Center(child: SettingsPage()),
+            Center(
+                child: SettingsPage(
+              dbHelper: dbHelper,
+            )),
           ],
         ),
       ),
