@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:quickstart/models/task_model.dart';
+import 'package:quickstart/models/user_model.dart';
 import 'package:quickstart/pages/settings_page.dart';
 import 'package:quickstart/pages/task_list_page.dart';
 import 'package:quickstart/sqlite/sqlite_repository.dart';
@@ -23,9 +24,15 @@ class _HomePageState extends State<HomePage> {
 
   DatabaseConfiguration dbHelper;
 
-  List<TaskModel> taskList = [];
+  // List<TaskModel> taskList = [];
   int selected = 0;
   final controller = PageController();
+
+  @override
+  void initState() {
+    super.initState();
+    // loadTasks();
+  }
 
   @override
   void dispose() {
@@ -99,7 +106,7 @@ class _HomePageState extends State<HomePage> {
           children: [
             Center(
               child: TaskListPage(
-                taskList: taskList,
+                // taskList: taskList,
               ),
             ),
             Center(
@@ -157,7 +164,9 @@ class _HomePageState extends State<HomePage> {
 
   void addTask(TaskModel taskModel) {
     setState(() {
-      taskList.add(taskModel);
+      dbHelper.addTask(taskModel);
+      // loadTasks();
+      Navigator.of(context).pop();
     });
   }
 }

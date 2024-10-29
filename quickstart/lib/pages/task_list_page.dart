@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:quickstart/models/task_model.dart';
+import 'package:quickstart/models/user_model.dart';
+import 'package:quickstart/sqlite/sqlite_repository.dart';
 import '../widgets/task_list_item_widget.dart';
 
 class TaskListPage extends StatefulWidget {
-  final List<TaskModel> taskList;
-
-  const TaskListPage({super.key, required this.taskList});
+  const TaskListPage({super.key});
 
   @override
-  State<TaskListPage> createState() => _TaskListPageState(taskList);
+  State<TaskListPage> createState() => _TaskListPageState();
 }
 
 class _TaskListPageState extends State<TaskListPage> {
-  _TaskListPageState(this.allTasks);
-
-  final List<TaskModel> allTasks;
+  List<TaskModel> allTasks = [];
+  final DatabaseConfiguration dbHelper = DatabaseConfiguration();
   final TextEditingController taskTextField = TextEditingController();
   final TextEditingController _searchController = TextEditingController();
   List<TaskModel> filteredTaskList = [];
@@ -24,7 +23,18 @@ class _TaskListPageState extends State<TaskListPage> {
   void initState() {
     super.initState();
     filteredTaskList = [];
+    loadTasks();
     _searchController.addListener(_onSearchChanged);
+  }
+
+  Future<void> loadTasks() async {
+    UserModel? user = await dbHelper.getLoggedInUser();
+    if (await dbHelper.isUserLoggedIn() && user != null) {
+      var tasks = await dbHelper.getAllTasks(user.id!);
+      setState(() {
+        allTasks = tasks;
+      });
+    }
   }
 
   @override
@@ -38,7 +48,7 @@ class _TaskListPageState extends State<TaskListPage> {
 
     setState(() {
       filteredTaskList = allTasks
-          .where((task) => task.title.toLowerCase().contains(query))
+          .where((task) => task.title!.toLowerCase().contains(query))
           .toList();
       isDropdownVisible = filteredTaskList.isNotEmpty;
     });
@@ -125,9 +135,9 @@ class _TaskListPageState extends State<TaskListPage> {
             itemBuilder: (context, index) {
               final task = filteredTaskList[index];
               return ListTile(
-                title: Text(task.title),
+                // title: Text(task.title),
                 onTap: () {
-                  _searchController.text = task.title;
+                  // _searchController.text = task.title;
                   _onSearchChanged();
                   FocusScope.of(context).unfocus();
                   setState(() {
@@ -193,36 +203,48 @@ class _TaskListPageState extends State<TaskListPage> {
   }
 
   void _onDelete(TaskModel task) {
-      setState(() {
-        allTasks.remove(task);
-        filteredTaskList = allTasks
-            .where((task) => task.title
-                .toLowerCase()
-                .contains(_searchController.text.toLowerCase()))
-            .toList();
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Tarefa \"${task.title}\" foi removida!"),
+    setState(() {
+      dbHelper.deleteTask(task);
+      loadTasks();
+      filteredTaskList = allTasks
+          .where((task) => task.title!
+              .toLowerCase()
+              .contains(_searchController.text.toLowerCase()))
+          .toList();
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("Tarefa \"${task.title}\" foi removida!"),
+        action: SnackBarAction(
+          label: "Desfazer",
+          onPressed: () {
+            setState(() {
+              dbHelper.addTask(task);
+              loadTasks();
+            });
+          },
         ),
-      );
+      ),
+    );
   }
 
   void _onDone(TaskModel task) {
-        setState(() {
-          task.state = TaskState.completed;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Tarefa \"${task.title}\" concluída!"),
-            action: SnackBarAction(
-                label: "desfazer",
-                onPressed: () {
-                  setState(() {
-                    task.state = TaskState.pending;
-                  });
-                }),
-          ),
-        );
+    setState(() {
+      dbHelper.updateTaskState(task.id!, TaskState.completed.name);
+      loadTasks();
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("Tarefa \"${task.title}\" concluída!"),
+        action: SnackBarAction(
+            label: "desfazer",
+            onPressed: () {
+              setState(() {
+                dbHelper.updateTaskState(task.id!, TaskState.pending.name);
+                loadTasks();
+              });
+            }),
+      ),
+    );
   }
 }

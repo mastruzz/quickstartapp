@@ -115,7 +115,7 @@ class _SingUpPageState extends State<SingUpPage> {
       //   'phone': phoneController.text,
       // };
 
-      User user = User(
+      UserModel user = UserModel(
           fullName: "${nameController.text} ${surnameController.text}",
           email: emailController.text,
           birthDate: birthDateController.text,

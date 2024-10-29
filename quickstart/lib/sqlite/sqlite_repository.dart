@@ -1,3 +1,4 @@
+import 'package:quickstart/models/task_model.dart';
 import 'package:quickstart/models/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
@@ -28,37 +29,45 @@ class DatabaseConfiguration {
       version: 1,
       onCreate: (Database db, int version) async {
         await db.execute('''
-          CREATE TABLE User (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            full_name TEXT NOT NULL,
-            birth_date TEXT,
-            email TEXT NOT NULL UNIQUE,
-            password TEXT NOT NULL,
-            phone TEXT
-          )''');
+        CREATE TABLE User (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          full_name TEXT NOT NULL,
+          birth_date TEXT,
+          email TEXT NOT NULL UNIQUE,
+          password TEXT NOT NULL,
+          phone TEXT
+        )''');
 
         await db.execute('''
-          CREATE TABLE Task (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            title TEXT NOT NULL,
-            due_date TEXT,
-            description TEXT,
-            state INTEGER NOT NULL,
-            user_id INTEGER,
-            FOREIGN KEY (user_id) REFERENCES User(id) ON DELETE CASCADE
-          )''');
+        CREATE TABLE Task (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          title TEXT NOT NULL,
+          completion_date TEXT,
+          creation_date TEXT,
+          description TEXT,
+          state String NOT NULL,
+          user_id INTEGER,
+          FOREIGN KEY (user_id) REFERENCES User(id) ON DELETE CASCADE
+        )''');
 
         await db.execute('''
-          CREATE TABLE Subtask (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            title TEXT NOT NULL,
-            state INTEGER NOT NULL,
-            task_id INTEGER,
-            FOREIGN KEY (task_id) REFERENCES Task(id) ON DELETE CASCADE
-          )''');
+        CREATE TABLE Subtask (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          title TEXT NOT NULL,
+          state String NOT NULL,
+          task_id INTEGER,
+          FOREIGN KEY (task_id) REFERENCES Task(id) ON DELETE CASCADE
+        )''');
+
+        // Índice para otimizar consultas de subtarefas de uma tarefa
+        await db.execute('''
+        CREATE INDEX idx_task_id ON Subtask (task_id)
+      ''');
       },
     );
   }
+
+  // ------------------- LOGIN - REGISTER ------------------------- //
 
   Future<int> insertUser(Map<String, dynamic> user) async {
     var dbClient = await db;
@@ -99,7 +108,7 @@ class DatabaseConfiguration {
       var result = consult.first;
       // Se a consulta retornar algo, o login foi bem-sucedido
       if (result.isNotEmpty) {
-        User user = User.fromMap(result);
+        UserModel user = UserModel.fromMap(result);
         await _setLoginState(user); // Define o usuário como logado
         return true;
       }
@@ -117,17 +126,17 @@ class DatabaseConfiguration {
   }
 
   // Método para armazenar o estado de login usando SharedPreferences
-  Future<void> _setLoginState(User user) async {
+  Future<void> _setLoginState(UserModel user) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('is_logged_in', true);
     await prefs.setString('logged_user', user.toJson());
   }
 
-  Future<User?> getLoggedInUser() async {
+  Future<UserModel?> getLoggedInUser() async {
     final prefs = await SharedPreferences.getInstance();
     final String? jsonUser = prefs.getString('logged_user');
     if (jsonUser != null && jsonUser.isNotEmpty) {
-      return User.fromJson(jsonUser);
+      return UserModel.fromJson(jsonUser);
     }
     return null;
   }
@@ -143,5 +152,80 @@ class DatabaseConfiguration {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
     await prefs.setBool('is_logged_in', false);
+  }
+
+
+
+  // ------------------------ TASK ------------------------------- //
+
+
+  // Método para buscar todas as Tasks de um usuário específico
+  Future<List<TaskModel>> getAllTasks(int userID) async {
+    var dbClient = await db;
+    List<TaskModel> taskList = [];
+
+    try {
+      // Consulta para obter todas as tasks associadas ao user_id
+      List<Map<String, dynamic>> consult = await dbClient.rawQuery(
+        'SELECT * FROM Task WHERE user_id = ?',
+        [userID],
+      );
+
+      // Converte cada Map em um objeto TaskModel e adiciona à lista
+      for (Map<String, dynamic> item in consult) {
+        TaskModel task =
+            TaskModel.fromMap(item); // Converte o item para TaskModel
+        taskList.add(task);
+      }
+      return taskList;
+    } catch (e) {
+      // Captura exceções e retorna uma lista vazia em caso de erro
+      print("Erro ao buscar tasks: $e");
+      return [];
+    }
+  }
+
+  Future<int> addTask(TaskModel task) async {
+    var dbClient = await db;
+
+    try {
+      // Converte o objeto TaskModel em um Map e insere no banco de dados
+      int taskId = await dbClient.insert(
+        'Task',
+        task.toMap(),
+      );
+      return taskId;
+    } catch (e) {
+      print("Erro ao adicionar task: $e");
+      return -1; // Retorna -1 em caso de erro
+    }
+  }
+
+  Future<void> deleteTask(TaskModel task) async {
+    var dbClient = await db;
+
+    try {
+      // Exclui a tarefa do banco de dados usando o ID da tarefa
+      await dbClient.delete(
+        'Task',
+        where: 'id = ?',
+        whereArgs: [task.id], // Substitua pelo ID da tarefa a ser deletada
+      );
+      print("Task removida");
+    } catch (e) {
+      print("Erro ao excluir task: $e");
+    }
+  }
+
+  // Método para atualizar o estado da task
+  Future<void> updateTaskState(int taskId, String newState) async {
+    final dbClient = await db;
+
+    await dbClient.update(
+      'Task',
+      {'state': newState}, // novo estado
+      where: 'id = ?',
+      whereArgs: [taskId], // id da task a ser atualizada
+    );
   }
 }

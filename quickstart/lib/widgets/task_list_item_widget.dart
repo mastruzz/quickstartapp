@@ -24,7 +24,7 @@ class _TaskListItem extends State<TaskListItem>
   _TaskListItem(this.task, this.onDelete, this.onDone);
 
   late final controller = SlidableController(this);
-  final TaskModel task;
+  TaskModel task;
   final Function(TaskModel) onDelete;
   final Function(TaskModel) onDone;
 
@@ -82,14 +82,14 @@ class _TaskListItem extends State<TaskListItem>
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  task.title,
+                  task.title!,
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w400,
                   ),
                 ),
                 Text(
-                  task.description,
+                  task.description!,
                   style: const TextStyle(
                     fontWeight: FontWeight.normal,
                   ),
@@ -110,10 +110,14 @@ class _TaskListItem extends State<TaskListItem>
   }
 
   String getFormatedDate() {
-    return DateFormat('dd/MM/yyyy - HH:mm:ss').format(task.doneDate);
+    if(task.completionDate != null) {
+      return task.completionDate!;
+    } else {
+      return "Não há data de Conclusão.";
+    }
   }
 
-  Color getTaskBackgroudColor(TaskState taskState) {
+  Color getTaskBackgroudColor(TaskState? taskState) {
     switch (taskState) {
       case TaskState.pending:
         return DefaultColors.yellow;
@@ -121,6 +125,8 @@ class _TaskListItem extends State<TaskListItem>
         return DefaultColors.oceanGreen;
       case TaskState.cancelled:
         return Colors.redAccent;
+      case null:
+        return DefaultColors.yellow;
     }
   }
 }

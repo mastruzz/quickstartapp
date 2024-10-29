@@ -18,10 +18,9 @@ class _ProfilePageState extends State<ProfilePage> {
 
   final DatabaseConfiguration dbHelper;
 
-  User? _user;
+  UserModel? _user;
 
   bool _isLoading = true;
-
 
   @override
   void initState() {

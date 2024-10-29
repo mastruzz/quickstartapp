@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:quickstart/models/task_model.dart';
+import 'package:quickstart/models/user_model.dart';
+import 'package:quickstart/sqlite/sqlite_repository.dart';
 
 class AddTaskWidget extends StatefulWidget {
   AddTaskWidget({super.key, required this.addTask});
@@ -13,6 +16,7 @@ class AddTaskWidget extends StatefulWidget {
 class _AddTaskWidgetState extends State<AddTaskWidget> {
   final titleTextFieldController = TextEditingController();
   final descriptionTextFieldController = TextEditingController();
+  final DatabaseConfiguration dbHelper = DatabaseConfiguration();
 
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
@@ -82,7 +86,7 @@ class _AddTaskWidgetState extends State<AddTaskWidget> {
             keyboardType: TextInputType.multiline,
           ),
           const SizedBox(height: 20),
-          getBottonRow(),
+          getBottonRow(context),
         ],
       ),
     );
@@ -118,7 +122,123 @@ class _AddTaskWidgetState extends State<AddTaskWidget> {
     );
   }
 
-  Widget getBottonRow() {
+  // Widget getBottonRow() {
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(vertical: 10.0),
+  //     child: Row(
+  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //       children: [
+  //         Row(
+  //           children: [
+  //             IconButton(
+  //               onPressed: () {
+  //                 print('Notificações clicado');
+  //               },
+  //               icon: const Icon(
+  //                 Icons.notifications_none,
+  //                 size: 25,
+  //               ),
+  //             ),
+  //             IconButton(
+  //               onPressed: () {
+  //                 _selectDate(context);
+  //               },
+  //               icon: const Icon(
+  //                 Icons.calendar_month_outlined,
+  //                 size: 25,
+  //               ),
+  //               color: calendarIconColor,
+  //             ),
+  //           ],
+  //         ),
+  //         Row(
+  //           children: [
+  //             ElevatedButton(
+  //               onPressed: () {
+  //                 Navigator.of(context).pop();
+  //               },
+  //               style: ElevatedButton.styleFrom(
+  //                 backgroundColor: const Color(0xFFE8595A),
+  //               ),
+  //               child: const Text(
+  //                 'Cancelar',
+  //                 style: TextStyle(color: Colors.white),
+  //               ),
+  //             ),
+  //             const SizedBox(width: 10),
+  //             ElevatedButton(
+  //               onPressed: () async {
+  //                 var title = titleTextFieldController.value.text;
+  //                 var description = descriptionTextFieldController.value.text;
+  //
+  //                 if (title.isEmpty || description.isEmpty) {
+  //                   var mensagem;
+  //                   if (title.isEmpty && description.isEmpty) {
+  //                     mensagem = 'Preencha os campos obrigatórios.';
+  //                   } else if (title.isEmpty && description.isNotEmpty) {
+  //                     mensagem = 'Campo \"Titulo\" não pode ser vazio.';
+  //                   } else {
+  //                     mensagem = 'Campo \"Descrição\" não pode ser vazio.';
+  //                   }
+  //
+  //                   ScaffoldMessenger.of(context).clearSnackBars();
+  //                   ScaffoldMessenger.of(context).showSnackBar(
+  //                     SnackBar(
+  //                         content: Text(
+  //                           mensagem,
+  //                           style: TextStyle(color: Colors.blueGrey.shade900),
+  //                         ),
+  //                         backgroundColor: Colors.grey.shade200,
+  //                         showCloseIcon: false),
+  //                   );
+  //                   Navigator.of(context).pop();
+  //                   return;
+  //                 }
+  //
+  //                 var combinedDateTime = DateTime.now();
+  //                 if (selectedDate != null && selectedTime != null) {
+  //                   combinedDateTime = DateTime(
+  //                     selectedDate!.year,
+  //                     selectedDate!.month,
+  //                     selectedDate!.day,
+  //                     selectedTime!.hour,
+  //                     selectedTime!.minute,
+  //                   );
+  //                 }
+  //
+  //                 var user = await getUser();
+  //                 var taskModel = TaskModel(
+  //                   title: titleTextFieldController.value.text,
+  //                   completionDate: DateFormat('dd/MM/yyyy - HH:mm:ss')
+  //                       .format(combinedDateTime),
+  //                   creationDate: DateFormat('dd/MM/yyyy - HH:mm:ss')
+  //                       .format(DateTime.now()),
+  //                   state: TaskState.pending,
+  //                   description: descriptionTextFieldController.value.text,
+  //                   userId: user!.id,
+  //                 );
+  //
+  //                 addTask(taskModel);
+  //                 Navigator.of(context).pop();
+  //               },
+  //               style: ElevatedButton.styleFrom(
+  //                 backgroundColor: const Color(0xFF53CC84),
+  //               ),
+  //               child: const Text(
+  //                 'Concluir',
+  //                 style: TextStyle(color: Colors.white),
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
+  bool _isLoading = false;
+
+  Widget getBottonRow(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: Row(
@@ -163,59 +283,17 @@ class _AddTaskWidgetState extends State<AddTaskWidget> {
               ),
               const SizedBox(width: 10),
               ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    var title = titleTextFieldController.value.text;
-                    var description = descriptionTextFieldController.value.text;
-
-                    if (title.isEmpty || description.isEmpty) {
-                      var mensagem;
-                      if (title.isEmpty && description.isEmpty) {
-                        mensagem = 'Preencha os campos obrigatórios.';
-                      } else if (title.isEmpty && description.isNotEmpty) {
-                        mensagem = 'Campo \"Titulo\" não pode ser vazio.';
-                      } else {
-                        mensagem = 'Campo \"Descrição\" não pode ser vazio.';
-                      }
-
-                      ScaffoldMessenger.of(context).clearSnackBars();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                            content: Text(
-                              mensagem,
-                              style: TextStyle(color: Colors.blueGrey.shade900),
-                            ),
-                            backgroundColor: Colors.grey.shade200,
-                            showCloseIcon: false),
-                      );
-                      Navigator.of(context).pop();
-                      return;
-                    }
-
-                    var combinedDateTime = DateTime.now();
-                    if (selectedDate != null && selectedTime != null) {
-                      combinedDateTime = DateTime(
-                        selectedDate!.year,
-                        selectedDate!.month,
-                        selectedDate!.day,
-                        selectedTime!.hour,
-                        selectedTime!.minute,
-                      );
-                    }
-
-                    var taskModel = TaskModel(
-                        titleTextFieldController.value.text,
-                        combinedDateTime,
-                        TaskState.pending,
-                        descriptionTextFieldController.value.text);
-                    addTask(taskModel);
-                    Navigator.of(context).pop();
-                  });
+                onPressed: _isLoading ? null : () async {
+                  await _handleTaskCreation(context);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF53CC84),
                 ),
-                child: const Text(
+                child: _isLoading
+                    ? CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                )
+                    : const Text(
                   'Concluir',
                   style: TextStyle(color: Colors.white),
                 ),
@@ -225,5 +303,94 @@ class _AddTaskWidgetState extends State<AddTaskWidget> {
         ],
       ),
     );
+  }
+
+  Future<void> _handleTaskCreation(BuildContext context) async {
+    setState(() => _isLoading = true);
+
+    try {
+      var title = titleTextFieldController.value.text;
+      var description = descriptionTextFieldController.value.text;
+
+      if (title.isEmpty || description.isEmpty) {
+        var mensagem;
+        if (title.isEmpty && description.isEmpty) {
+          mensagem = 'Preencha os campos obrigatórios.';
+        } else if (title.isEmpty) {
+          mensagem = 'Campo "Título" não pode ser vazio.';
+        } else {
+          mensagem = 'Campo "Descrição" não pode ser vazio.';
+        }
+
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              mensagem,
+              style: TextStyle(color: Colors.blueGrey.shade900),
+            ),
+            backgroundColor: Colors.grey.shade200,
+          ),
+        );
+        setState(() => _isLoading = false);
+        return;
+      }
+
+      var combinedDateTime = DateTime.now();
+      if (selectedDate != null && selectedTime != null) {
+        combinedDateTime = DateTime(
+          selectedDate!.year,
+          selectedDate!.month,
+          selectedDate!.day,
+          selectedTime!.hour,
+          selectedTime!.minute,
+        );
+      }
+
+      var user = await getUser();
+      if (user == null) {
+        throw Exception('Usuário não encontrado');
+      }
+
+      var taskModel = TaskModel(
+        title: title,
+        completionDate: DateFormat('dd/MM/yyyy - HH:mm:ss').format(combinedDateTime),
+        creationDate: DateFormat('dd/MM/yyyy - HH:mm:ss').format(DateTime.now()),
+        state: TaskState.pending,
+        description: description,
+        userId: user.id,
+      );
+
+      await addTask(taskModel);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Tarefa adicionada com sucesso!',
+            style: TextStyle(color: Colors.blueGrey.shade900),
+          ),
+          backgroundColor: Colors.green.shade200,
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Erro ao adicionar tarefa: $e',
+            style: TextStyle(color: Colors.blueGrey.shade900),
+          ),
+          backgroundColor: Colors.red.shade200,
+        ),
+      );
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<UserModel?> getUser() async {
+    if (await dbHelper.isUserLoggedIn()) {
+      return await dbHelper.getLoggedInUser();
+    }
+    return null;
   }
 }
