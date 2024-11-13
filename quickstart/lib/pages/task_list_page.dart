@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:quickstart/models/task_model.dart';
 import 'package:quickstart/models/user_model.dart';
 import 'package:quickstart/sqlite/sqlite_repository.dart';
+import 'package:quickstart/widgets/default_colors.dart';
 import '../widgets/task_list_item_widget.dart';
 
 class TaskListPage extends StatefulWidget {
@@ -64,7 +65,7 @@ class _TaskListPageState extends State<TaskListPage> {
         });
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFFF4F4F9),
+        backgroundColor: DefaultColors.background,
         body: Stack(
           children: [
             SingleChildScrollView(
@@ -75,9 +76,9 @@ class _TaskListPageState extends State<TaskListPage> {
                   children: [
                     _buildSearchBar(),
                     const SizedBox(height: 20),
-                    const Text(
+                    Text(
                       "Tarefas",
-                      style: TextStyle(color: Colors.black, fontSize: 32),
+                      style: TextStyle(color: DefaultColors.title, fontSize: 32),
                     ),
                     const SizedBox(height: 20),
                     _buildPendingTaskList(),
@@ -99,14 +100,17 @@ class _TaskListPageState extends State<TaskListPage> {
       child: TextField(
         controller: _searchController,
         decoration: InputDecoration(
-          hintText: "Pesquisar tarefas...",
-          prefixIcon: const Icon(Icons.search, color: Colors.grey),
+          hintText: "Buscar...",
+          hintStyle: TextStyle(
+            color: DefaultColors.title
+          ),
+          prefixIcon: const Icon(Icons.search, color: Colors.white),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(40),
             borderSide: BorderSide.none,
           ),
           filled: true,
-          fillColor: Colors.white,
+          fillColor: DefaultColors.searchBarBackground,
           contentPadding:
               const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
         ),
@@ -126,7 +130,7 @@ class _TaskListPageState extends State<TaskListPage> {
           constraints: const BoxConstraints(maxHeight: 200),
           // Limita a altura do dropdown
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: DefaultColors.searchBarBackground,
             borderRadius: BorderRadius.circular(12),
           ),
           child: ListView.builder(

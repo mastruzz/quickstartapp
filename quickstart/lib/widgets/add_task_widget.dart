@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:quickstart/models/task_model.dart';
 import 'package:quickstart/models/user_model.dart';
 import 'package:quickstart/sqlite/sqlite_repository.dart';
+import 'package:quickstart/widgets/default_colors.dart';
 
 class AddTaskWidget extends StatefulWidget {
   AddTaskWidget({super.key, required this.addTask});
@@ -20,7 +21,7 @@ class _AddTaskWidgetState extends State<AddTaskWidget> {
 
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
-  Color calendarIconColor = Colors.black;
+  Color calendarIconColor = DefaultColors.title;
 
   _AddTaskWidgetState(this.addTask);
 
@@ -33,9 +34,10 @@ class _AddTaskWidgetState extends State<AddTaskWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Nova Tarefa',
             style: TextStyle(
+              color: DefaultColors.title,
               fontSize: 24,
               fontWeight: FontWeight.w400,
             ),
@@ -43,18 +45,21 @@ class _AddTaskWidgetState extends State<AddTaskWidget> {
           const SizedBox(height: 20),
           TextField(
             controller: titleTextFieldController,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               hintText: 'Título',
+              hintStyle: TextStyle(
+                color: DefaultColors.title
+              ),
               filled: true,
-              focusColor: Colors.white,
-              fillColor: Colors.white,
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.transparent),
-                borderRadius: BorderRadius.all(Radius.circular(100)),
+              focusColor: DefaultColors.addWidgetTextFieldBackground,
+              fillColor: DefaultColors.addWidgetTextFieldBackground,
+              enabledBorder:  OutlineInputBorder(
+                borderSide: BorderSide(color: DefaultColors.cardBorder),
+                borderRadius: const BorderRadius.all(Radius.circular(100)),
               ),
               focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.transparent),
-                borderRadius: BorderRadius.all(Radius.circular(100)),
+                borderSide: BorderSide(color: DefaultColors.cardBorder),
+                borderRadius: const BorderRadius.all(Radius.circular(100)),
               ),
               counterText: '',
             ),
@@ -65,28 +70,31 @@ class _AddTaskWidgetState extends State<AddTaskWidget> {
           const SizedBox(height: 20.0),
           TextField(
             controller: descriptionTextFieldController,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               hintText: 'Descrição',
+              hintStyle: TextStyle(
+                  color: DefaultColors.title
+              ),
               filled: true,
-              focusColor: Colors.white,
-              fillColor: Colors.white,
-              enabledBorder: OutlineInputBorder(
+              focusColor: DefaultColors.addWidgetTextFieldBackground,
+              fillColor: DefaultColors.addWidgetTextFieldBackground,
+              enabledBorder: const OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.transparent),
                 borderRadius: BorderRadius.all(Radius.circular(30)),
               ),
-              focusedBorder: OutlineInputBorder(
+              focusedBorder: const OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.transparent),
                 borderRadius: BorderRadius.all(Radius.circular(30)),
               ),
               contentPadding:
-                  EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
+                  const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
             ),
             maxLines: 3,
             maxLength: 100,
             keyboardType: TextInputType.multiline,
           ),
           const SizedBox(height: 20),
-          getBottonRow(context),
+          _getBottonRow(context),
         ],
       ),
     );
@@ -122,123 +130,9 @@ class _AddTaskWidgetState extends State<AddTaskWidget> {
     );
   }
 
-  // Widget getBottonRow() {
-  //   return Padding(
-  //     padding: const EdgeInsets.symmetric(vertical: 10.0),
-  //     child: Row(
-  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //       children: [
-  //         Row(
-  //           children: [
-  //             IconButton(
-  //               onPressed: () {
-  //                 print('Notificações clicado');
-  //               },
-  //               icon: const Icon(
-  //                 Icons.notifications_none,
-  //                 size: 25,
-  //               ),
-  //             ),
-  //             IconButton(
-  //               onPressed: () {
-  //                 _selectDate(context);
-  //               },
-  //               icon: const Icon(
-  //                 Icons.calendar_month_outlined,
-  //                 size: 25,
-  //               ),
-  //               color: calendarIconColor,
-  //             ),
-  //           ],
-  //         ),
-  //         Row(
-  //           children: [
-  //             ElevatedButton(
-  //               onPressed: () {
-  //                 Navigator.of(context).pop();
-  //               },
-  //               style: ElevatedButton.styleFrom(
-  //                 backgroundColor: const Color(0xFFE8595A),
-  //               ),
-  //               child: const Text(
-  //                 'Cancelar',
-  //                 style: TextStyle(color: Colors.white),
-  //               ),
-  //             ),
-  //             const SizedBox(width: 10),
-  //             ElevatedButton(
-  //               onPressed: () async {
-  //                 var title = titleTextFieldController.value.text;
-  //                 var description = descriptionTextFieldController.value.text;
-  //
-  //                 if (title.isEmpty || description.isEmpty) {
-  //                   var mensagem;
-  //                   if (title.isEmpty && description.isEmpty) {
-  //                     mensagem = 'Preencha os campos obrigatórios.';
-  //                   } else if (title.isEmpty && description.isNotEmpty) {
-  //                     mensagem = 'Campo \"Titulo\" não pode ser vazio.';
-  //                   } else {
-  //                     mensagem = 'Campo \"Descrição\" não pode ser vazio.';
-  //                   }
-  //
-  //                   ScaffoldMessenger.of(context).clearSnackBars();
-  //                   ScaffoldMessenger.of(context).showSnackBar(
-  //                     SnackBar(
-  //                         content: Text(
-  //                           mensagem,
-  //                           style: TextStyle(color: Colors.blueGrey.shade900),
-  //                         ),
-  //                         backgroundColor: Colors.grey.shade200,
-  //                         showCloseIcon: false),
-  //                   );
-  //                   Navigator.of(context).pop();
-  //                   return;
-  //                 }
-  //
-  //                 var combinedDateTime = DateTime.now();
-  //                 if (selectedDate != null && selectedTime != null) {
-  //                   combinedDateTime = DateTime(
-  //                     selectedDate!.year,
-  //                     selectedDate!.month,
-  //                     selectedDate!.day,
-  //                     selectedTime!.hour,
-  //                     selectedTime!.minute,
-  //                   );
-  //                 }
-  //
-  //                 var user = await getUser();
-  //                 var taskModel = TaskModel(
-  //                   title: titleTextFieldController.value.text,
-  //                   completionDate: DateFormat('dd/MM/yyyy - HH:mm:ss')
-  //                       .format(combinedDateTime),
-  //                   creationDate: DateFormat('dd/MM/yyyy - HH:mm:ss')
-  //                       .format(DateTime.now()),
-  //                   state: TaskState.pending,
-  //                   description: descriptionTextFieldController.value.text,
-  //                   userId: user!.id,
-  //                 );
-  //
-  //                 addTask(taskModel);
-  //                 Navigator.of(context).pop();
-  //               },
-  //               style: ElevatedButton.styleFrom(
-  //                 backgroundColor: const Color(0xFF53CC84),
-  //               ),
-  //               child: const Text(
-  //                 'Concluir',
-  //                 style: TextStyle(color: Colors.white),
-  //               ),
-  //             ),
-  //           ],
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
   bool _isLoading = false;
 
-  Widget getBottonRow(BuildContext context) {
+  Widget _getBottonRow(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: Row(
@@ -250,7 +144,8 @@ class _AddTaskWidgetState extends State<AddTaskWidget> {
                 onPressed: () {
                   print('Notificações clicado');
                 },
-                icon: const Icon(
+                icon: Icon(
+                  color: DefaultColors.title,
                   Icons.notifications_none,
                   size: 25,
                 ),
@@ -274,11 +169,11 @@ class _AddTaskWidgetState extends State<AddTaskWidget> {
                   Navigator.of(context).pop();
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFE8595A),
+                  backgroundColor: Colors.transparent,
                 ),
-                child: const Text(
+                child: Text(
                   'Cancelar',
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(color: DefaultColors.title),
                 ),
               ),
               const SizedBox(width: 10),
@@ -287,15 +182,15 @@ class _AddTaskWidgetState extends State<AddTaskWidget> {
                   await _handleTaskCreation(context);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF53CC84),
+                  backgroundColor: DefaultColors.successButton,
                 ),
                 child: _isLoading
-                    ? CircularProgressIndicator(
+                    ? const CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                 )
-                    : const Text(
+                    : Text(
                   'Concluir',
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(color: DefaultColors.title),
                 ),
               ),
             ],
@@ -313,7 +208,7 @@ class _AddTaskWidgetState extends State<AddTaskWidget> {
       var description = descriptionTextFieldController.value.text;
 
       if (title.isEmpty || description.isEmpty) {
-        var mensagem;
+        String mensagem;
         if (title.isEmpty && description.isEmpty) {
           mensagem = 'Preencha os campos obrigatórios.';
         } else if (title.isEmpty) {
@@ -367,9 +262,9 @@ class _AddTaskWidgetState extends State<AddTaskWidget> {
         SnackBar(
           content: Text(
             'Tarefa adicionada com sucesso!',
-            style: TextStyle(color: Colors.blueGrey.shade900),
+            style: TextStyle(color: Colors.blueGrey.shade900,),
           ),
-          backgroundColor: Colors.green.shade200,
+          backgroundColor: Colors.green.shade50,
         ),
       );
     } catch (e) {
@@ -377,7 +272,7 @@ class _AddTaskWidgetState extends State<AddTaskWidget> {
         SnackBar(
           content: Text(
             'Erro ao adicionar tarefa: $e',
-            style: TextStyle(color: Colors.blueGrey.shade900),
+            style: TextStyle(color: Colors.blueGrey.shade900,),
           ),
           backgroundColor: Colors.red.shade200,
         ),

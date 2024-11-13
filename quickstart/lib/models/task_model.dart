@@ -17,7 +17,6 @@ class TaskModel {
   String? description;
   TaskState? state;  // Representa o status da tarefa
   int? userId; // FK para User
-  List<SubtaskModel>? subtasks; // Lista de subtarefas
 
   // Construtor
   TaskModel({
@@ -28,7 +27,6 @@ class TaskModel {
     this.description,
     required this.state,
     required this.userId,
-    this.subtasks,
   });
 
   // Converter objeto Task para Map (para salvar no banco de dados)
@@ -45,7 +43,7 @@ class TaskModel {
   }
 
   // Converter Map para objeto Task (ao recuperar do banco de dados)
-  factory TaskModel.fromMap(Map<String, dynamic> map, {List<SubtaskModel>? subtasks}) {
+  factory TaskModel.fromMap(Map<String, dynamic> map) {
     return TaskModel(
       id: map['id'],
       title: map['title'],
@@ -57,7 +55,6 @@ class TaskModel {
         orElse: () => TaskState.pending,
       ),
       userId: map['user_id'],
-      subtasks: subtasks,
     );
   }
 
@@ -71,7 +68,6 @@ class TaskModel {
       'description': description,
       'state': state?.index,
       'user_id': userId,
-      'subtasks': subtasks?.map((subtask) => subtask.toJsonMap()).toList(),
     };
     return jsonEncode(mapData);
   }
@@ -92,9 +88,6 @@ class TaskModel {
       description: json['description'],
       state: json['state'] != null ? TaskState.values[json['state']] : null,
       userId: json['user_id'],
-      subtasks: (json['subtasks'] as List<dynamic>?)
-          ?.map((subtaskJson) => SubtaskModel.fromJsonMap(subtaskJson))
-          .toList(),
     );
   }
 
@@ -108,7 +101,6 @@ class TaskModel {
       'description': description,
       'user_id': userId,
       'state': state?.index,
-      'subtasks': subtasks?.map((subtask) => subtask.toJsonMap()).toList(),
     };
   }
 }

@@ -1,3 +1,4 @@
+import 'package:quickstart/models/subtask_model.dart';
 import 'package:quickstart/models/task_model.dart';
 import 'package:quickstart/models/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -226,6 +227,78 @@ class DatabaseConfiguration {
       {'state': newState}, // novo estado
       where: 'id = ?',
       whereArgs: [taskId], // id da task a ser atualizada
+    );
+  }
+
+  // ========================== SubtaskModel ==============================
+
+  // Método para buscar todas as Tasks de um usuário específico
+  Future<List<SubtaskModel>> getAllSubtasks(int taskId) async {
+    var dbClient = await db;
+    List<SubtaskModel> subTaskList = [];
+
+    try {
+      // Consulta para obter todas as tasks associadas ao user_id
+      List<Map<String, dynamic>> consult = await dbClient.rawQuery(
+        'SELECT * FROM Subtask WHERE task_id = ?',
+        [taskId.toString()],
+      );
+
+      // Converte cada Map em um objeto TaskModel e adiciona à lista
+      for (Map<String, dynamic> item in consult) {
+        SubtaskModel task =
+        SubtaskModel.fromMap(item); // Converte o item para TaskModel
+        subTaskList.add(task);
+      }
+      return subTaskList;
+    } catch (e) {
+      // Captura exceções e retorna uma lista vazia em caso de erro
+      print("Erro ao buscar subtasks: $e");
+      return [];
+    }
+  }
+
+  Future<int> addSubtask(SubtaskModel subtask) async {
+    var dbClient = await db;
+
+    try {
+      // Converte o objeto TaskModel em um Map e insere no banco de dados
+      int taskId = await dbClient.insert(
+        'Subtask',
+        subtask.toMap(),
+      );
+      return taskId;
+    } catch (e) {
+      print("Erro ao adicionar task: $e");
+      return -1; // Retorna -1 em caso de erro
+    }
+  }
+
+  Future<void> deleteSubtask(SubtaskModel task) async {
+    var dbClient = await db;
+
+    try {
+      // Exclui a tarefa do banco de dados usando o ID da tarefa
+      await dbClient.delete(
+        'Subtask',
+        where: 'id = ?',
+        whereArgs: [task.id], // Substitua pelo ID da tarefa a ser deletada
+      );
+      print("Task removida");
+    } catch (e) {
+      print("Erro ao excluir task: $e");
+    }
+  }
+
+  // Método para atualizar o estado da task
+  Future<void> updateSubtaskState(int subtaskId, String newState) async {
+    final dbClient = await db;
+
+    await dbClient.update(
+      'Subtask',
+      {'state': newState}, // novo estado
+      where: 'id = ?',
+      whereArgs: [subtaskId], // id da task a ser atualizada
     );
   }
 }

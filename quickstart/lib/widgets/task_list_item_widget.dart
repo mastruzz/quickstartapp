@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
 import 'package:quickstart/models/task_model.dart';
+import 'package:quickstart/pages/task_page.dart';
 import 'package:quickstart/widgets/default_colors.dart';
 
 class TaskListItem extends StatefulWidget {
@@ -45,7 +46,7 @@ class _TaskListItem extends State<TaskListItem>
               padding: const EdgeInsets.symmetric(horizontal: 20),
               borderRadius: BorderRadius.circular(30),
               backgroundColor: const Color(0xFF21B7CA),
-              foregroundColor: Colors.white,
+              // foregroundColor: Colors.white,
               icon: Icons.done,
               label: 'Concluir',
             ),
@@ -61,47 +62,62 @@ class _TaskListItem extends State<TaskListItem>
               borderRadius: BorderRadius.circular(30),
               autoClose: true,
               backgroundColor: const Color(0xFFFE4A49),
-              foregroundColor: Colors.white,
+              // foregroundColor: Colors.white,
               icon: Icons.delete,
               label: 'Deletar',
             )
           ],
         ),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(25),
-            border: Border.all(
-              color: DefaultColors.purple,
-              width: 3,
+        child: InkWell(
+          // onTap: () {
+          //   onTap;
+          // },
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => TaskPage(task: task),
+              ),
+            );
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(25),
+              border: Border.all(
+                color: DefaultColors.cardBorder,
+                width: 3,
+              ),
+              color: getTaskBackgroudColor(task.state),
             ),
-            color: getTaskBackgroudColor(task.state),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  task.title!,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w400,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    task.title!,
+                    style: TextStyle(
+                      color: DefaultColors.title,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                ),
-                Text(
-                  task.description!,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.normal,
+                  Text(
+                    task.description!,
+                    style: TextStyle(
+                      color: DefaultColors.subtitle,
+                      fontWeight: FontWeight.normal,
+                    ),
                   ),
-                ),
-                const Text(
-                  '1 de 10',
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.normal,
+                  const Text(
+                    '1 de 10',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.normal,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -120,9 +136,9 @@ class _TaskListItem extends State<TaskListItem>
   Color getTaskBackgroudColor(TaskState? taskState) {
     switch (taskState) {
       case TaskState.pending:
-        return DefaultColors.yellow;
+        return DefaultColors.cardBackgroud;
       case TaskState.completed:
-        return DefaultColors.oceanGreen;
+        return DefaultColors.doneCardBackgroud;
       case TaskState.cancelled:
         return Colors.redAccent;
       case null:

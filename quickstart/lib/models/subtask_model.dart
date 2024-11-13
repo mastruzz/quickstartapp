@@ -23,7 +23,7 @@ class SubtaskModel {
       'id': id,
       'title': title,
       'state': state?.name,  // Armazena o índice do enum
-      'taskId': taskId,
+      'task_id': taskId,
     };
   }
 
@@ -32,8 +32,11 @@ class SubtaskModel {
     return SubtaskModel(
       id: map['id'],
       title: map['title'],
-      state: TaskState.values[map['state']],
-      taskId: map['taskId'],
+      state: TaskState.values.firstWhere(
+            (e) => e.toString().split('.').last == map['state'],
+        orElse: () => TaskState.pending,
+      ),
+      taskId: map['task_id'],
     );
   }
 
@@ -43,7 +46,7 @@ class SubtaskModel {
       'id': id,
       'title': title,
       'state': state?.name,
-      'taskId': taskId,
+      'task_id': taskId,
     };
     return jsonEncode(mapData);
   }
@@ -60,7 +63,7 @@ class SubtaskModel {
       id: json['id'],
       title: json['title'],
       state: json['state'] != null ? TaskState.values[json['state']] : null,
-      taskId: json['taskId'],
+      taskId: json['task_id'],
     );
   }
 
@@ -70,7 +73,7 @@ class SubtaskModel {
       'id': id,
       'title': title,
       'state': state?.index,
-      'taskId': taskId,
+      'task_id': taskId,
     };
   }
 }

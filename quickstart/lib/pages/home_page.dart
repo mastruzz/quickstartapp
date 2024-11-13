@@ -6,6 +6,7 @@ import 'package:quickstart/pages/settings_page.dart';
 import 'package:quickstart/pages/task_list_page.dart';
 import 'package:quickstart/sqlite/sqlite_repository.dart';
 import 'package:quickstart/widgets/add_task_widget.dart';
+import 'package:quickstart/widgets/default_colors.dart';
 import 'package:stylish_bottom_bar/stylish_bottom_bar.dart';
 
 class HomePage extends StatefulWidget {
@@ -24,7 +25,6 @@ class _HomePageState extends State<HomePage> {
 
   DatabaseConfiguration dbHelper;
 
-  // List<TaskModel> taskList = [];
   int selected = 0;
   final controller = PageController();
 
@@ -45,34 +45,42 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       extendBody: true,
       bottomNavigationBar: StylishBottomBar(
-        option: AnimatedBarOptions(
-          barAnimation: BarAnimation.fade,
-          iconStyle: IconStyle.animated,
-          opacity: 0.3,
+        backgroundColor: DefaultColors.navbarBackground,
+        option: DotBarOptions(
+          // barStyle: BubbleBarStyle.vertical,
+          // bubbleFillStyle: BubbleFillStyle.fill,
+          // barAnimation: BarAnimation.fade,
+          // iconStyle: IconStyle.animated,
+          // opacity: 0.5,
         ),
         items: [
           BottomBarItem(
-            icon: const Icon(
+            icon: Icon(
               Icons.list,
+              color: DefaultColors.navbarIcons,
             ),
-            title: const Text('Tarefas'),
+            title: Text(
+              'Tarefas',
+              style: TextStyle(
+                color: DefaultColors.navbarIcons,
+              ),
+            ),
           ),
           BottomBarItem(
-            icon: const Icon(
+            icon: Icon(
               Icons.settings,
+              color: DefaultColors.navbarIcons,
             ),
-            selectedIcon: const Icon(
-              Icons.settings,
-            ),
-            title: const Text(
+            title: Text(
               'Configuração',
+              style: TextStyle(color: DefaultColors.navbarIcons),
             ),
           ),
         ],
         iconSpace: 5.0,
         hasNotch: true,
         currentIndex: selected,
-        notchStyle: NotchStyle.square,
+        notchStyle: NotchStyle.themeDefault,
         onTap: (index) {
           controller.animateToPage(index,
               duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
@@ -83,17 +91,16 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          setState(() {
-            _showDialog();
-          });
+          _showDialog();
+          setState(() {});
         },
-        backgroundColor: Colors.white,
-        child: const Icon(
+        backgroundColor: DefaultColors.navbarBackground,
+        child: Icon(
           CupertinoIcons.add,
-          color: Colors.green,
+          color: DefaultColors.floatinButton,
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: SafeArea(
         child: PageView(
           controller: controller,
@@ -104,10 +111,10 @@ class _HomePageState extends State<HomePage> {
             });
           },
           children: [
-            Center(
+            const Center(
               child: TaskListPage(
-                // taskList: taskList,
-              ),
+                  // taskList: taskList,
+                  ),
             ),
             Center(
                 child: SettingsPage(
@@ -131,9 +138,9 @@ class _HomePageState extends State<HomePage> {
             bottom: MediaQuery.of(context).viewInsets.bottom,
           ),
           child: Container(
-            decoration: const BoxDecoration(
-              color: Color(0xFFF4F4F9),
-              borderRadius: BorderRadius.only(
+            decoration: BoxDecoration(
+              color: DefaultColors.background,
+              borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(30),
                 topRight: Radius.circular(30),
               ),
@@ -148,7 +155,7 @@ class _HomePageState extends State<HomePage> {
                     height: 5,
                     margin: const EdgeInsets.symmetric(vertical: 10),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF595959),
+                      color: DefaultColors.title,
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
@@ -163,10 +170,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   void addTask(TaskModel taskModel) {
-    setState(() {
-      dbHelper.addTask(taskModel);
-      // loadTasks();
-      Navigator.of(context).pop();
-    });
+    dbHelper.addTask(taskModel);
+    Navigator.of(context).pop();
+    setState(() {});
   }
 }
