@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:quickstart/pages/home_page.dart';
 import 'package:quickstart/pages/sing_up_page.dart';
+import 'package:quickstart/widgets/default_colors.dart';
 import '../sqlite/sqlite_repository.dart'; // Importa o repositório do banco de dados
 
 class LoginPage extends StatefulWidget {
@@ -23,7 +24,6 @@ class _LoginPageState extends State<LoginPage> {
 
   bool _isLoading = false;
   String? _errorMessage;
-
 
   Future<void> _login() async {
     setState(() {
@@ -78,35 +78,37 @@ class _LoginPageState extends State<LoginPage> {
           height: 100, // Altura da imagem
         ),
         const SizedBox(width: 8.0), // Espaçamento entre a imagem e o texto
-        const Text(
+        Text(
           'Quick\nStart', // Texto com quebra de linha
           textAlign: TextAlign.center,
           style: TextStyle(
               fontSize: 36.0, // Tamanho do texto
               fontWeight: FontWeight.normal,
               fontFamily: 'Limelight-Regular',
-              color: Color(0xFF9C9C9C)),
+              color: DefaultColors.title),
         ),
       ],
     );
 
     final titlePage = Text(
       'Entrar',
-      style: TextStyle(fontSize: 32, color: Color(0xD9515151)),
+      style: TextStyle(fontSize: 32, color: DefaultColors.title),
     );
 
     final emailField = TextFormField(
       keyboardType: TextInputType.emailAddress,
       autofocus: false,
-      cursorColor: Colors.black,
+      cursorColor: DefaultColors.cardBackgroud,
       controller: _emailController,
+      style: TextStyle(color: DefaultColors.title),  // Cor do texto digitado
       decoration: InputDecoration(
         labelText: "Email",
         labelStyle: TextStyle(
-          color: Colors.grey, // Cor da label quando não está focado
+          color: DefaultColors.title, // Cor da label quando não está focado
         ),
-        fillColor: Colors.white,
-        filled: true, // Habilita a cor de fundo do input
+        fillColor: DefaultColors.searchBarBackground,
+        filled: true,
+        // Habilita a cor de fundo do input
         contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(color: Colors.transparent), // Borda ao focar
@@ -122,15 +124,17 @@ class _LoginPageState extends State<LoginPage> {
     final passwordField = TextFormField(
       obscureText: true,
       autofocus: false,
-      cursorColor: Colors.black,
+      cursorColor: DefaultColors.cardBackgroud,
       controller: _passwordController,
+      style: TextStyle(color: DefaultColors.title),  // Cor do texto digitado
       decoration: InputDecoration(
         labelText: "Senha",
         labelStyle: TextStyle(
-          color: Colors.grey, // Cor da label quando não está focado
+          color: DefaultColors.title, // Cor da label quando não está focado
         ),
-        fillColor: Colors.white,
-        filled: true, // Habilita a cor de fundo do input
+        fillColor: DefaultColors.searchBarBackground,
+        filled: true,
+        // Habilita a cor de fundo do input
         contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(color: Colors.transparent), // Borda ao focar
@@ -145,20 +149,20 @@ class _LoginPageState extends State<LoginPage> {
 
     final forgotPassword = Container(
       width: double.infinity,
-      child: const Text(
+      child: Text(
         'Esqueci a senha',
         textAlign: TextAlign.right, // Alinha o texto à direita
         style: TextStyle(
             fontSize: 18,
             decoration: TextDecoration.underline,
-            decorationColor: Color(0xFF4E7987),
-            color: Color(0xFF4E7987)),
+            decorationColor: DefaultColors.cardBackgroud,
+            color: DefaultColors.cardBackgroud),
       ),
     );
 
     final loginButton = ElevatedButton(
       style: ElevatedButton.styleFrom(
-        backgroundColor: Color(0xCF86E1AB), // Cor de fundo
+        backgroundColor: DefaultColors.doneCardBackgroud, // Cor de fundo
         foregroundColor: Colors.white, // Cor do texto
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12), // Formato arredondado
@@ -167,7 +171,7 @@ class _LoginPageState extends State<LoginPage> {
             horizontal: 32, vertical: 9), // Espaçamento interno
       ),
       child: Text('Login',
-          style: TextStyle(color: Color(0x7D000000), fontSize: 20)),
+          style: TextStyle(color: DefaultColors.title, fontSize: 20)),
       onPressed: () {
         _login();
       },
@@ -175,16 +179,16 @@ class _LoginPageState extends State<LoginPage> {
 
     final singUpButton = ElevatedButton(
         style: OutlinedButton.styleFrom(
-          side: BorderSide(color: Color(0xFF7F7765), width: 3),
+          side: BorderSide(color: DefaultColors.navbarBackground, width: 3),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12), // Bordas arredondadas
           ),
           padding: EdgeInsets.symmetric(horizontal: 32, vertical: 9),
-          backgroundColor: Color(0xCFF4DFB1),
+          backgroundColor: DefaultColors.background,
         ),
         child: Text(
-          'Registre-se',
-          style: TextStyle(color: Color(0x6B060606), fontSize: 20),
+          'Registrar-se',
+          style: TextStyle(color: DefaultColors.navbarBackground, fontSize: 20),
         ),
         onPressed: () {
           Navigator.pushReplacementNamed(context, SingUpPage.tag);
@@ -195,27 +199,29 @@ class _LoginPageState extends State<LoginPage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back_ios_new, color: DefaultColors.title),
           onPressed: () {
             Navigator.pushReplacementNamed(context, HomePage.tag);
           },
         ),
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: DefaultColors.background,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Spacer(flex: 2),
+            const Spacer(flex: 1),
             logoImage,
-            Spacer(flex: 1),
+            const SizedBox(
+              height: 30,
+            ),
             titlePage,
             Container(
               width: MediaQuery.of(context).size.width * 0.8,
               height: MediaQuery.of(context).size.width * 0.66,
               decoration: BoxDecoration(
-                color: Color(0xCFF4DFB1),
-                border: Border.all(color: Color(0x61D8D1E4), width: 5),
+                color: DefaultColors.background,
+                border: Border.all(color: DefaultColors.cardBorder, width: 5),
                 borderRadius: BorderRadius.circular(20.0),
               ),
               child: ListView(

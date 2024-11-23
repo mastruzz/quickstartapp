@@ -37,9 +37,16 @@ dependencies:
   flutter_slidable: ^3.1.1
   stylish_bottom_bar: ^1.1.0
   flutter_launcher_icons: "^0.13.1"
+  image_picker: ^0.8.7+5
   shared_preferences: ^2.0.6
   flutter_multi_formatter: ^2.13.0
   persistent_bottom_nav_bar_v2: ^5.3.1
+  flutter_local_notifications: ^18.0.1
+  timezone: ^0.9.0
+  permission_handler: ^10.0.0
+  flutter_statusbarcolor_ns: ^0.5.0
+  flutter_localizations: # Adicione esta linha, caso não exista
+    sdk: flutter
   sqflite: ^2.4.0
   path: ^1.8.0
 

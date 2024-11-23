@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:quickstart/models/subtask_model.dart';
 import 'package:quickstart/models/task_model.dart';
 import 'package:quickstart/models/user_model.dart';
 import 'package:quickstart/sqlite/sqlite_repository.dart';
+import 'package:quickstart/widgets/default_colors.dart';
 
 class AddSubtaskWidget extends StatefulWidget {
   AddSubtaskWidget({super.key, required this.addTask, required this.taskId});
@@ -12,7 +12,8 @@ class AddSubtaskWidget extends StatefulWidget {
   final int taskId;
 
   @override
-  _AddSubtaskWidgetState createState() => _AddSubtaskWidgetState(addTask, taskId);
+  _AddSubtaskWidgetState createState() =>
+      _AddSubtaskWidgetState(addTask, taskId);
 }
 
 class _AddSubtaskWidgetState extends State<AddSubtaskWidget> {
@@ -31,9 +32,10 @@ class _AddSubtaskWidgetState extends State<AddSubtaskWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Novo Passo',
             style: TextStyle(
+              color: DefaultColors.title,
               fontSize: 24,
               fontWeight: FontWeight.w400,
             ),
@@ -41,24 +43,32 @@ class _AddSubtaskWidgetState extends State<AddSubtaskWidget> {
           const SizedBox(height: 20),
           TextField(
             controller: titleTextFieldController,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               hintText: 'Título',
+              hintStyle: TextStyle(
+                color: DefaultColors.title,
+              ),
               filled: true,
-              focusColor: Colors.white,
-              fillColor: Colors.white,
+              focusColor: DefaultColors.addWidgetTextFieldBackground,
+              fillColor: DefaultColors.addWidgetTextFieldBackground,
               enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.transparent),
-                borderRadius: BorderRadius.all(Radius.circular(100)),
+                borderSide: BorderSide(color: DefaultColors.cardBorder),
+                borderRadius: const BorderRadius.all(Radius.circular(100)),
               ),
               focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.transparent),
-                borderRadius: BorderRadius.all(Radius.circular(100)),
+                borderSide: BorderSide(color: DefaultColors.cardBorder),
+                borderRadius: const BorderRadius.all(Radius.circular(100)),
               ),
               counterText: '',
             ),
             maxLines: 1,
             maxLength: 40,
             keyboardType: TextInputType.multiline,
+            cursorColor: DefaultColors.cardBackgroud,
+            // Define a cor do cursor
+            style: TextStyle(
+              color: DefaultColors.title, // Define a cor do texto digitado
+            ),
           ),
           const SizedBox(height: 20.0),
           getBottonRow(context),
@@ -82,29 +92,31 @@ class _AddSubtaskWidgetState extends State<AddSubtaskWidget> {
                   Navigator.of(context).pop();
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFE8595A),
+                  backgroundColor: Colors.transparent,
                 ),
-                child: const Text(
+                child: Text(
                   'Cancelar',
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(color: DefaultColors.title),
                 ),
               ),
               const SizedBox(width: 10),
               ElevatedButton(
-                onPressed: _isLoading ? null : () async {
-                  await _handleTaskCreation(context);
-                },
+                onPressed: _isLoading
+                    ? null
+                    : () async {
+                        await _handleTaskCreation(context);
+                      },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF53CC84),
+                  backgroundColor: DefaultColors.successButton,
                 ),
                 child: _isLoading
                     ? const CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                )
-                    : const Text(
-                  'Concluir',
-                  style: TextStyle(color: Colors.white),
-                ),
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      )
+                    : Text(
+                        'Concluir',
+                        style: TextStyle(color: DefaultColors.title),
+                      ),
               ),
             ],
           ),
@@ -145,11 +157,8 @@ class _AddSubtaskWidgetState extends State<AddSubtaskWidget> {
         throw Exception('Usuário não encontrado');
       }
 
-      var taskModel = SubtaskModel(
-        title: title,
-        state: TaskState.pending,
-        taskId: taskId
-      );
+      var taskModel =
+          SubtaskModel(title: title, state: TaskState.pending, taskId: taskId);
 
       await addTask(taskModel);
 

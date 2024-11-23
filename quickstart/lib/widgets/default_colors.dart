@@ -23,6 +23,7 @@ class DefaultColors {
 //   ------------- NAVBAR COLORS -------------------------
   static Color navbarBackground = const Color(0xFF000000);
   static Color navbarIcons = const Color(0xFFEAF4FC);
+  static Color navbarSelectedIcons = const Color(0xFF0F9C9D);
   static Color floatinButton = const Color(0xFF0F9C9D);
 
 
@@ -32,7 +33,7 @@ class DefaultColors {
 
 
 //  --------------- BUTTONS ---------------------------------
-static Color successButton = const Color(0xFF0F9C9D);
+  static Color successButton = const Color(0xFF0F9C9D);
 
 
 }

@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:quickstart/models/user_model.dart';
 import 'package:quickstart/sqlite/sqlite_repository.dart';
 
@@ -17,6 +19,8 @@ class _ProfilePageState extends State<ProfilePage> {
   _ProfilePageState(this.dbHelper);
 
   final DatabaseConfiguration dbHelper;
+  final ImagePicker _picker = ImagePicker(); // Instância do ImagePicker
+  File? _profileImage; // Arquivo de imagem selecionado
 
   UserModel? _user;
 
@@ -25,15 +29,23 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
-    _loadUser(); // Chama o método para carregar o usuário ao iniciar a página
+    _loadUser();
   }
 
   Future<void> _loadUser() async {
     _user = await dbHelper.getLoggedInUser();
     setState(() {
-      _isLoading =
-          false; // Atualiza o estado para indicar que o carregamento terminou
+      _isLoading = false;
     });
+  }
+
+  Future<void> _pickImage() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _profileImage = File(pickedFile.path); // Salva a imagem selecionada
+      });
+    }
   }
 
   @override
@@ -43,7 +55,7 @@ class _ProfilePageState extends State<ProfilePage> {
     } else if (_user != null) {
       return SafeArea(
         child: Scaffold(
-          backgroundColor: Color(0xFFF5F5F5), // Light gray background
+          backgroundColor: const Color(0xFFF5F5F5),
           body: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -51,31 +63,38 @@ class _ProfilePageState extends State<ProfilePage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   const SizedBox(height: 40),
-                  // Profile image
+                  // Área para imagem de perfil
                   Stack(
                     children: [
                       CircleAvatar(
                         radius: 60,
                         backgroundColor: Colors.grey.shade200,
-                        child: const Icon(
+                        backgroundImage:
+                        _profileImage != null ? FileImage(_profileImage!) : null,
+                        child: _profileImage == null
+                            ? const Icon(
                           Icons.person,
                           size: 80,
                           color: Colors.grey,
-                        ),
+                        )
+                            : null,
                       ),
-                      const Positioned(
+                      Positioned(
                         bottom: 0,
                         right: 0,
-                        child: CircleAvatar(
-                          radius: 16,
-                          backgroundColor: Colors.greenAccent,
-                          child: Icon(Icons.add, color: Colors.white, size: 16),
+                        child: GestureDetector(
+                          onTap: _pickImage, // Abre a galeria para selecionar a imagem
+                          child: const CircleAvatar(
+                            radius: 16,
+                            backgroundColor: Colors.greenAccent,
+                            child: Icon(Icons.add, color: Colors.white, size: 16),
+                          ),
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 20),
-                  // User Name
+                  // Nome do usuário
                   Text(
                     _user!.fullName!,
                     style: TextStyle(
@@ -85,13 +104,11 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  // Email row
+                  // Outras informações do usuário
                   infoRow('E-mail:', _user!.email!),
                   Divider(thickness: 1, color: Colors.grey.shade300),
-                  // Birthdate row
                   infoRow('Data de Nascimento:', _user!.birthDate!),
                   Divider(thickness: 1, color: Colors.grey.shade300),
-                  // Password row with change link
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -100,7 +117,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       InkWell(
                         onTap: () {
-                          // Navigate to change password screen
+                          // Navegar para alterar senha
                         },
                         child: const Text(
                           'Alterar senha >',
@@ -114,13 +131,11 @@ class _ProfilePageState extends State<ProfilePage> {
                     ],
                   ),
                   Divider(thickness: 1, color: Colors.grey.shade300),
-                  // Phone number row
                   infoRow('Telefone:', _user!.phone!),
                   Divider(thickness: 1, color: Colors.grey.shade300),
-                  SizedBox(height: 20),
-                  // Join date text
+                  const SizedBox(height: 20),
                   Text(
-                    'ingressou em: 22/09/2024',
+                    'Ingressou em: 22/09/2024',
                     style: TextStyle(
                       color: Colors.grey.shade500,
                       fontSize: 14,
@@ -137,7 +152,6 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  // Widget for creating each row with title and info
   Widget infoRow(String title, String info) {
     return Row(
       children: [

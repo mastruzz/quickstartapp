@@ -19,6 +19,7 @@ class SingUpPage extends StatefulWidget {
 
 class _SingUpPageState extends State<SingUpPage> {
   _SingUpPageState(this.dbHelper);
+
   DatabaseConfiguration dbHelper;
 
   @override
@@ -105,16 +106,6 @@ class _SingUpPageState extends State<SingUpPage> {
         return;
       }
 
-      // Se todos os campos estiverem válidos, insere o usuário no banco de dados
-      // Map<String, dynamic> user = {
-      //   'first_name': nameController.text,
-      //   'last_name': surnameController.text,
-      //   'birth_date': birthDateController.text,
-      //   'email': emailController.text,
-      //   'password': passwordController.text,
-      //   'phone': phoneController.text,
-      // };
-
       UserModel user = UserModel(
           fullName: "${nameController.text} ${surnameController.text}",
           email: emailController.text,
@@ -130,43 +121,43 @@ class _SingUpPageState extends State<SingUpPage> {
 
     final logoImage = Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      // Centraliza o conteúdo na horizontal
       children: <Widget>[
         Image.asset(
-          'assets/images/logo.png', // Caminho da imagem no assets
-          width: 100, // Largura da imagem
-          height: 100, // Altura da imagem
+          'assets/images/logo.png',
+          width: 100,
+          height: 100,
         ),
         const SizedBox(width: 8.0), // Espaçamento entre a imagem e o texto
-        const Text(
+        Text(
           'Quick\nStart', // Texto com quebra de linha
           textAlign: TextAlign.center,
           style: TextStyle(
               fontSize: 36.0, // Tamanho do texto
               fontWeight: FontWeight.normal,
               fontFamily: 'Limelight-Regular',
-              color: Color(0xFF9C9C9C)),
+              color: DefaultColors.title),
         ),
       ],
     );
 
     final titlePage = Text(
       'Registrar-se',
-      style: TextStyle(fontSize: 32, color: Color(0xD9515151)),
+      style: TextStyle(fontSize: 32, color: DefaultColors.title),
     );
 
     final nameField = TextFormField(
       autofocus: false,
-      cursorColor: Colors.black,
+      cursorColor: DefaultColors.cardBackgroud,
       controller: nameController,
+      style: TextStyle(color: DefaultColors.title),  // Cor do texto digitado
       decoration: InputDecoration(
-        hintText: "Mateus",
-        hintStyle: const TextStyle(color: Colors.grey),
+        hintText: "seu nome",
+        hintStyle: TextStyle(color: Colors.grey),
         labelText: "Nome",
-        labelStyle: const TextStyle(
-          color: Colors.grey, // Cor da label quando não está focado
+        labelStyle: TextStyle(
+          color: DefaultColors.title, // Cor da label quando não está focado
         ),
-        fillColor: Colors.white,
+        fillColor: DefaultColors.searchBarBackground,
         // Cor de fundo do input
         filled: true,
         // Habilita a cor de fundo do input
@@ -194,16 +185,17 @@ class _SingUpPageState extends State<SingUpPage> {
 
     final surnameField = TextFormField(
       autofocus: false,
-      cursorColor: Colors.black,
+      cursorColor: DefaultColors.cardBackgroud,
       controller: surnameController,
+      style: TextStyle(color: DefaultColors.title),  // Cor do texto digitado
       decoration: InputDecoration(
-        hintText: "Oliveira",
-        hintStyle: const TextStyle(color: Colors.grey),
+        hintText: "seu sobrenome",
+        hintStyle: TextStyle(color: Colors.grey),
         labelText: "Sobrenome",
-        labelStyle: const TextStyle(
-          color: Colors.grey, // Cor da label quando não está focado
+        labelStyle: TextStyle(
+          color: DefaultColors.title, // Cor da label quando não está focado
         ),
-        fillColor: Colors.white,
+        fillColor: DefaultColors.searchBarBackground,
         // Cor de fundo do input
         filled: true,
         // Habilita a cor de fundo do input
@@ -231,8 +223,9 @@ class _SingUpPageState extends State<SingUpPage> {
 
     final birthDateField = TextFormField(
       autofocus: false,
-      cursorColor: Colors.black,
+      cursorColor: DefaultColors.cardBackgroud,
       controller: birthDateController,
+      style: TextStyle(color: DefaultColors.title),  // Cor do texto digitado
       keyboardType: TextInputType.datetime,
       // Tipo de teclado específico para datas
       inputFormatters: [
@@ -241,10 +234,10 @@ class _SingUpPageState extends State<SingUpPage> {
       ],
       decoration: InputDecoration(
         hintText: "dd/mm/yyyy",
-        hintStyle: const TextStyle(color: Colors.grey),
+        hintStyle: TextStyle(color: Colors.grey),
         labelText: "Data de Nascimento",
-        labelStyle: const TextStyle(color: Colors.grey),
-        fillColor: Colors.white,
+        labelStyle: TextStyle(color: DefaultColors.title),
+        fillColor: DefaultColors.searchBarBackground,
         filled: true,
         contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
         focusedBorder: OutlineInputBorder(
@@ -276,16 +269,17 @@ class _SingUpPageState extends State<SingUpPage> {
     final emailField = TextFormField(
       keyboardType: TextInputType.emailAddress,
       autofocus: false,
-      cursorColor: Colors.black,
+      cursorColor: DefaultColors.cardBackgroud,
       controller: emailController,
+      style: TextStyle(color: DefaultColors.title),  // Cor do texto digitado
       decoration: InputDecoration(
         hintText: "email@email.com",
         hintStyle: const TextStyle(color: Colors.grey),
         labelText: "Email",
-        labelStyle: const TextStyle(
-          color: Colors.grey, // Cor da label quando não está focado
+        labelStyle: TextStyle(
+          color: DefaultColors.title, // Cor da label quando não está focado
         ),
-        fillColor: Colors.white,
+        fillColor: DefaultColors.searchBarBackground,
         // Cor de fundo do input
         filled: true,
         // Habilita a cor de fundo do input
@@ -314,16 +308,17 @@ class _SingUpPageState extends State<SingUpPage> {
     final passwordField = TextFormField(
       obscureText: true,
       autofocus: false,
-      cursorColor: Colors.black,
+      cursorColor: DefaultColors.cardBackgroud,
       controller: passwordController,
+      style: TextStyle(color: DefaultColors.title),  // Cor do texto digitado
       decoration: InputDecoration(
         hintText: "***********",
         hintStyle: const TextStyle(color: Colors.grey),
         labelText: "Senha",
         labelStyle: TextStyle(
-          color: Colors.grey, // Cor da label quando não está focado
+          color: DefaultColors.title, // Cor da label quando não está focado
         ),
-        fillColor: Colors.white,
+        fillColor: DefaultColors.searchBarBackground,
         // Cor de fundo do input
         filled: true,
         // Habilita a cor de fundo do input
@@ -352,37 +347,31 @@ class _SingUpPageState extends State<SingUpPage> {
     final confirmPasswordField = TextFormField(
       obscureText: true,
       autofocus: false,
-      cursorColor: Colors.black,
+      cursorColor: DefaultColors.cardBackgroud,
       controller: confirmPasswordController,
+      style: TextStyle(color: DefaultColors.title),  // Cor do texto digitado
       validator: validatePasswordMatch,
       decoration: InputDecoration(
         hintText: "***********",
         hintStyle: const TextStyle(color: Colors.grey),
         labelText: "Confirmar Senha",
         labelStyle: TextStyle(
-          color: Colors.grey, // Cor da label quando não está focado
+          color: DefaultColors.title,
         ),
-        fillColor: Colors.white,
+        fillColor: DefaultColors.searchBarBackground,
         // Cor de fundo do input
         filled: true,
-        // Habilita a cor de fundo do input
         contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
         focusedBorder: OutlineInputBorder(
-          // Borda quando o campo está focado
           borderSide: BorderSide(color: Colors.transparent),
-          // Removendo a cor da borda ao focar
           borderRadius: BorderRadius.circular(10.0),
         ),
         enabledBorder: OutlineInputBorder(
-          // Borda quando não está focado
           borderSide: BorderSide(color: Colors.transparent),
-          // Remove a borda ao não focar
           borderRadius: BorderRadius.circular(10.0),
         ),
         border: OutlineInputBorder(
-          // Borda padrão
           borderSide: BorderSide(color: Colors.transparent),
-          // Remove a borda padrão
           borderRadius: BorderRadius.circular(10.0),
         ),
       ),
@@ -390,30 +379,25 @@ class _SingUpPageState extends State<SingUpPage> {
 
     final phoneNumberField = TextFormField(
       autofocus: false,
-      cursorColor: Colors.black,
+      cursorColor: DefaultColors.cardBackgroud,
       controller: phoneController,
+      style: TextStyle(color: DefaultColors.title),  // Cor do texto digitado
       keyboardType: TextInputType.phone,
-      // Define o tipo de teclado como numérico para telefone
       inputFormatters: [
         MaskedInputFormatter('(##) #####-####'),
-        // Máscara para telefone com DDD
       ],
       decoration: InputDecoration(
         hintText: "(00)00000-0000",
         hintStyle: const TextStyle(color: Colors.grey),
         labelText: "Telefone",
-        labelStyle: const TextStyle(
-          color: Colors.grey, // Cor da label quando não está focado
+        labelStyle: TextStyle(
+          color: DefaultColors.title,
         ),
-        fillColor: Colors.white,
-        // Cor de fundo do input
+        fillColor: DefaultColors.searchBarBackground,
         filled: true,
-        // Habilita a cor de fundo do input
         contentPadding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
         focusedBorder: OutlineInputBorder(
-          // Borda quando o campo está focado
           borderSide: const BorderSide(color: Colors.transparent),
-          // Removendo a cor da borda ao focar
           borderRadius: BorderRadius.circular(10.0),
         ),
         enabledBorder: OutlineInputBorder(
@@ -432,36 +416,37 @@ class _SingUpPageState extends State<SingUpPage> {
     );
 
     final singUpButton = ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Color(0xCF86E1AB), // Cor de fundo
-        foregroundColor: Colors.white, // Cor do texto
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12), // Formato arredondado
+        style: ElevatedButton.styleFrom(
+          backgroundColor: DefaultColors.doneCardBackgroud ,
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 9),
         ),
-        padding: const EdgeInsets.symmetric(
-            horizontal: 32, vertical: 9), // Espaçamento interno
-      ),
-      child: const Text('Registrar-se',
-          style: TextStyle(color: Color(0x7D000000), fontSize: 20)),
-      onPressed: () {
-        try {
-          addUser(context);
-          Navigator.pushReplacementNamed(context, LoginPage.tag);
-          const snackBar = SnackBar(
-            content: Text(
-              "Cadastro realizado com sucesso!.",
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
+        child: Text('Registrar-se',
+            style: TextStyle(color: DefaultColors.title, fontSize: 20)),
+        onPressed: () {
+          try {
+            addUser(context);
+            Navigator.pushReplacementNamed(context, LoginPage.tag);
+            const snackBar = SnackBar(
+              content: Text(
+                "Cadastro realizado com sucesso!.",
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                ),
               ),
-            ),
-            backgroundColor: Colors.green,
-          );
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        } catch (exception) {
-          showErrorSnackbar(context, "Erro durante o cadastro, tente novamente mais tarde.",);
-        }
-        }
-    );
+              backgroundColor: Colors.green,
+            );
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          } catch (exception) {
+            showErrorSnackbar(
+              context,
+              "Erro durante o cadastro, tente novamente mais tarde.",
+            );
+          }
+        });
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -469,13 +454,13 @@ class _SingUpPageState extends State<SingUpPage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back_ios_new, color: Colors.white),
           onPressed: () {
             Navigator.pushNamed(context, LoginPage.tag);
           },
         ),
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: DefaultColors.background,
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -484,14 +469,14 @@ class _SingUpPageState extends State<SingUpPage> {
             children: <Widget>[
               logoImage,
               const SizedBox(height: 30.0),
-              titlePage,
+              // titlePage,
               Container(
                 width: MediaQuery.of(context).size.width * 0.8,
                 padding: const EdgeInsets.symmetric(
                     vertical: 24.0, horizontal: 24.0),
                 decoration: BoxDecoration(
-                  color: const Color(0xCFF4DFB1),
-                  border: Border.all(color: const Color(0x61D8D1E4), width: 5),
+                  color: DefaultColors.background,
+                  border: Border.all(color: DefaultColors.cardBorder, width: 5),
                   borderRadius: BorderRadius.circular(20.0),
                 ),
                 child: Column(

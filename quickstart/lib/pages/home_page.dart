@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:quickstart/config/notification_configuration.dart';
 import 'package:quickstart/models/task_model.dart';
-import 'package:quickstart/models/user_model.dart';
+import 'package:quickstart/pages/settings_page.dart';
 import 'package:quickstart/pages/settings_page.dart';
 import 'package:quickstart/pages/task_list_page.dart';
 import 'package:quickstart/sqlite/sqlite_repository.dart';
@@ -24,6 +26,9 @@ class _HomePageState extends State<HomePage> {
   _HomePageState(this.dbHelper);
 
   DatabaseConfiguration dbHelper;
+  final notificationConfig = NotificationConfig();
+
+  final GlobalKey<TaskListPageState> taskListKey = GlobalKey<TaskListPageState>();
 
   int selected = 0;
   final controller = PageController();
@@ -31,7 +36,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    // loadTasks();
   }
 
   @override
@@ -43,37 +47,53 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: true,
+      // extendBody: true,
       bottomNavigationBar: StylishBottomBar(
         backgroundColor: DefaultColors.navbarBackground,
-        option: DotBarOptions(
-          // barStyle: BubbleBarStyle.vertical,
-          // bubbleFillStyle: BubbleFillStyle.fill,
-          // barAnimation: BarAnimation.fade,
-          // iconStyle: IconStyle.animated,
-          // opacity: 0.5,
+        elevation: 0,
+        option: AnimatedBarOptions(
+          barAnimation: BarAnimation.fade,
+          iconStyle: IconStyle.Default,
+          inkColor: DefaultColors.navbarBackground,
+          opacity: 0.5,
         ),
         items: [
           BottomBarItem(
-            icon: Icon(
+            icon: const Icon(
               Icons.list,
-              color: DefaultColors.navbarIcons,
             ),
-            title: Text(
+            selectedColor: DefaultColors.navbarSelectedIcons,
+            unSelectedColor: DefaultColors.navbarIcons,
+            title: const Text(
               'Tarefas',
-              style: TextStyle(
-                color: DefaultColors.navbarIcons,
+              style: TextStyle(),
+            ),
+          ),
+          BottomBarItem(
+            icon: InkWell(
+              onTap: _showDialog,
+              child: const Icon(
+                Icons.add_rounded,
+              ),
+            ),
+            selectedColor: DefaultColors.navbarSelectedIcons,
+            unSelectedColor: DefaultColors.navbarIcons,
+            title: InkWell(
+              onTap: _showDialog,
+              child: const Text(
+                'Nova Tarefa',
+                style: TextStyle(),
               ),
             ),
           ),
           BottomBarItem(
-            icon: Icon(
+            icon: const Icon(
               Icons.settings,
-              color: DefaultColors.navbarIcons,
             ),
-            title: Text(
+            selectedColor: DefaultColors.navbarSelectedIcons,
+            unSelectedColor: DefaultColors.navbarIcons,
+            title: const Text(
               'Configuração',
-              style: TextStyle(color: DefaultColors.navbarIcons),
             ),
           ),
         ],
@@ -82,39 +102,32 @@ class _HomePageState extends State<HomePage> {
         currentIndex: selected,
         notchStyle: NotchStyle.themeDefault,
         onTap: (index) {
+          if (index == 1) {
+            _showDialog;
+            return;
+          }
           controller.animateToPage(index,
-              duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut);
+
           setState(() {
             selected = index;
           });
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _showDialog();
-          setState(() {});
-        },
-        backgroundColor: DefaultColors.navbarBackground,
-        child: Icon(
-          CupertinoIcons.add,
-          color: DefaultColors.floatinButton,
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: SafeArea(
         child: PageView(
           controller: controller,
           onPageChanged: (index) {
+            if (index == 1) index++;
             // Atualiza o índice 'selected' quando deslizar para a direita/esquerda
             setState(() {
               selected = index;
             });
           },
           children: [
-            const Center(
-              child: TaskListPage(
-                  // taskList: taskList,
-                  ),
+            Center(
+              child: TaskListPage(key: taskListKey),
             ),
             Center(
                 child: SettingsPage(
@@ -169,9 +182,18 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void addTask(TaskModel taskModel) {
-    dbHelper.addTask(taskModel);
+  void addTask(TaskModel taskModel) async {
+    final int id = await dbHelper.addTask(taskModel);
+    if(taskModel.completionDate != null && taskModel.completionDate!.isNotEmpty) {
+      String dateString = taskModel.completionDate!; // Exemplo de data no formato definido
+      DateFormat format = DateFormat('dd/MM/yyyy - HH:mm:ss');
+
+      DateTime parsedDate = format.parse(dateString);
+
+      notificationConfig.scheduleNotifications(id, taskModel.title!, parsedDate);
+    }
     Navigator.of(context).pop();
+    taskListKey.currentState?.updatePage();
     setState(() {});
   }
 }

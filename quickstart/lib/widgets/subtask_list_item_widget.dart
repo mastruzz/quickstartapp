@@ -9,24 +9,28 @@ class SubtaskListItem extends StatefulWidget {
       {super.key,
       required this.task,
       required this.onDelete,
-      required this.onDone});
+      required this.onDone,
+      required this.unDone});
 
   final SubtaskModel task;
   final Function(SubtaskModel) onDelete;
   final Function(SubtaskModel) onDone;
+  final Function(SubtaskModel) unDone;
 
   @override
-  State<SubtaskListItem> createState() => _SubtaskListItem(task, onDelete, onDone);
+  State<SubtaskListItem> createState() =>
+      _SubtaskListItem(task, onDelete, onDone, unDone);
 }
 
 class _SubtaskListItem extends State<SubtaskListItem>
     with SingleTickerProviderStateMixin {
-  _SubtaskListItem(this.task, this.onDelete, this.onDone);
+  _SubtaskListItem(this.task, this.onDelete, this.onDone, this.unDone);
 
   late final controller = SlidableController(this);
   SubtaskModel task;
   final Function(SubtaskModel) onDelete;
   final Function(SubtaskModel) onDone;
+  final Function(SubtaskModel) unDone;
 
   @override
   Widget build(BuildContext context) {
@@ -35,43 +39,43 @@ class _SubtaskListItem extends State<SubtaskListItem>
       child: Slidable(
         key: const ValueKey(0),
         startActionPane: ActionPane(
-          motion: const ScrollMotion(),
+          motion: const BehindMotion(),
           children: [
-            SlidableAction(
-              onPressed: (context) {
-                onDone(task);
-              },
-              autoClose: true,
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              borderRadius: BorderRadius.circular(30),
-              backgroundColor: const Color(0xFF21B7CA),
-              foregroundColor: Colors.white,
-              icon: Icons.done,
-              label: 'Concluir',
+            const SizedBox(
+              width: 4,
+            ),
+            getDoneButton(),
+            const SizedBox(
+              width: 4,
             ),
           ],
         ),
         endActionPane: ActionPane(
-          motion: const DrawerMotion(),
+          motion: const BehindMotion(),
           children: [
+            const SizedBox(
+              width: 4,
+            ),
             SlidableAction(
               onPressed: (context) {
                 onDelete(task);
               },
               borderRadius: BorderRadius.circular(30),
               autoClose: true,
-              backgroundColor: const Color(0xFFFE4A49),
-              foregroundColor: Colors.white,
+              backgroundColor: DefaultColors.cardBorder,
               icon: Icons.delete,
               label: 'Deletar',
-            )
+            ),
+            const SizedBox(
+              width: 4,
+            ),
           ],
         ),
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(25),
             border: Border.all(
-              color: DefaultColors.purple,
+              color: DefaultColors.cardBorder,
               width: 3,
             ),
             color: getTaskBackgroudColor(task.state),
@@ -83,7 +87,8 @@ class _SubtaskListItem extends State<SubtaskListItem>
               children: [
                 Text(
                   task.title!,
-                  style: const TextStyle(
+                  style: TextStyle(
+                    color: DefaultColors.subtitle,
                     fontSize: 20,
                     fontWeight: FontWeight.w400,
                   ),
@@ -99,13 +104,44 @@ class _SubtaskListItem extends State<SubtaskListItem>
   Color getTaskBackgroudColor(TaskState? taskState) {
     switch (taskState) {
       case TaskState.pending:
-        return DefaultColors.yellow;
+        return DefaultColors.cardBackgroud;
       case TaskState.completed:
-        return DefaultColors.oceanGreen;
+        return DefaultColors.doneCardBackgroud;
       case TaskState.cancelled:
         return Colors.redAccent;
       case null:
         return DefaultColors.yellow;
     }
+  }
+
+  SlidableAction getDoneButton() {
+    if (task.state! == TaskState.pending) {
+      return SlidableAction(
+        // foregroundColor:DefaultColors.cardBackgroud ,
+        onPressed: (context) {
+          onDone(task);
+        },
+        spacing: 2.0,
+        autoClose: true,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        borderRadius: BorderRadius.circular(30),
+        backgroundColor: DefaultColors.doneCardBackgroud,
+        // foregroundColor: Colors.white,
+        icon: Icons.done,
+        label: 'Concluir',
+      );
+    }
+    return SlidableAction(
+      onPressed: (context) {
+        unDone(task);
+      },
+      autoClose: true,
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      borderRadius: BorderRadius.circular(30),
+      backgroundColor: DefaultColors.cardBackgroud,
+      foregroundColor: DefaultColors.subtitle,
+      icon: Icons.cancel,
+      label: 'Desconcluir',
+    );
   }
 }

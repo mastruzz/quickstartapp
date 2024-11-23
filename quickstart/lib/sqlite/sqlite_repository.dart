@@ -155,7 +155,10 @@ class DatabaseConfiguration {
     await prefs.setBool('is_logged_in', false);
   }
 
-
+  Future<void> saveUserPicture(String path) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user_picture', path);
+  }
 
   // ------------------------ TASK ------------------------------- //
 
@@ -202,11 +205,29 @@ class DatabaseConfiguration {
     }
   }
 
+  Future<int> editTask(TaskModel task) async {
+    var dbClient = await db;
+
+    try {
+      // Atualiza a tarefa no banco com base no ID
+      int rowsAffected = await dbClient.update(
+        'Task',                // Nome da tabela
+        task.toMap(),          // Dados atualizados (em formato Map)
+        where: 'id = ?',       // Condição para encontrar a tarefa pelo ID
+        whereArgs: [task.id],  // Substitui o '?' com o ID da tarefa
+      );
+      return rowsAffected;     // Retorna o número de linhas afetadas
+    } catch (e) {
+      print("Erro ao editar task: $e");
+      return -1;               // Retorna -1 em caso de erro
+    }
+  }
+
+  // Exclui a tarefa do banco de dados usando o ID da tarefa
   Future<void> deleteTask(TaskModel task) async {
     var dbClient = await db;
 
     try {
-      // Exclui a tarefa do banco de dados usando o ID da tarefa
       await dbClient.delete(
         'Task',
         where: 'id = ?',
