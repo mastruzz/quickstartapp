@@ -5,16 +5,18 @@ import 'package:quickstart/models/user_model.dart';
 import 'package:quickstart/sqlite/sqlite_repository.dart';
 import 'package:quickstart/widgets/default_colors.dart';
 
-class AddTaskWidget extends StatefulWidget {
-  AddTaskWidget({super.key, required this.addTask});
+class EditTaskWidget extends StatefulWidget {
+  EditTaskWidget({super.key, required this.editTask, required this.taskModel});
 
-  final Function(TaskModel) addTask;
+  final Function(TaskModel) editTask;
+  final TaskModel taskModel;
 
   @override
-  _AddTaskWidgetState createState() => _AddTaskWidgetState(addTask);
+  _EditTaskWidgetState createState() =>
+      _EditTaskWidgetState(editTask, taskModel);
 }
 
-class _AddTaskWidgetState extends State<AddTaskWidget> {
+class _EditTaskWidgetState extends State<EditTaskWidget> {
   final titleTextFieldController = TextEditingController();
   final descriptionTextFieldController = TextEditingController();
   final DatabaseConfiguration dbHelper = DatabaseConfiguration();
@@ -23,9 +25,10 @@ class _AddTaskWidgetState extends State<AddTaskWidget> {
   TimeOfDay? selectedTime;
   Color calendarIconColor = DefaultColors.title;
 
-  _AddTaskWidgetState(this.addTask);
+  _EditTaskWidgetState(this.editTask, this.taskModel);
 
-  final Function(TaskModel) addTask;
+  final Function(TaskModel) editTask;
+  final TaskModel taskModel;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +38,7 @@ class _AddTaskWidgetState extends State<AddTaskWidget> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Nova Tarefa',
+            'Editar Tarefa',
             style: TextStyle(
               color: DefaultColors.title,
               fontSize: 24,
@@ -46,9 +49,11 @@ class _AddTaskWidgetState extends State<AddTaskWidget> {
           TextField(
             controller: titleTextFieldController,
             decoration: InputDecoration(
-              hintText: 'Título',
+              hintText:
+                  taskModel.title!.isNotEmpty ? taskModel.title : "titulo",
               hintStyle: TextStyle(
-                color: DefaultColors.title,
+                color: DefaultColors.title.withAlpha(90),
+                fontWeight: FontWeight.w400,
               ),
               filled: true,
               focusColor: DefaultColors.addWidgetTextFieldBackground,
@@ -76,8 +81,13 @@ class _AddTaskWidgetState extends State<AddTaskWidget> {
           TextField(
             controller: descriptionTextFieldController,
             decoration: InputDecoration(
-              hintText: 'Descrição',
-              hintStyle: TextStyle(color: DefaultColors.title),
+              hintText: taskModel.description!.isNotEmpty
+                  ? taskModel.description
+                  : 'Descrição',
+              hintStyle: TextStyle(
+                color: DefaultColors.title.withAlpha(90),
+                fontWeight: FontWeight.w400,
+              ),
               filled: true,
               focusColor: DefaultColors.addWidgetTextFieldBackground,
               fillColor: DefaultColors.addWidgetTextFieldBackground,
@@ -243,35 +253,13 @@ class _AddTaskWidgetState extends State<AddTaskWidget> {
   Future<void> _handleTaskCreation(BuildContext context) async {
     setState(() => _isLoading = true);
 
+    TaskModel localTaskModel = taskModel;
+
     try {
       var title = titleTextFieldController.value.text;
       var description = descriptionTextFieldController.value.text;
 
-      if (title.isEmpty || description.isEmpty) {
-        String mensagem;
-        if (title.isEmpty && description.isEmpty) {
-          mensagem = 'Preencha os campos obrigatórios.';
-        } else if (title.isEmpty) {
-          mensagem = 'Campo "Título" não pode ser vazio.';
-        } else {
-          mensagem = 'Campo "Descrição" não pode ser vazio.';
-        }
-
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              mensagem,
-              style: TextStyle(color: Colors.blueGrey.shade900),
-            ),
-            backgroundColor: Colors.grey.shade200,
-          ),
-        );
-        setState(() => _isLoading = false);
-        return;
-      }
-
-      var combinedDateTime = DateTime.now();
+      DateTime? combinedDateTime;
       if (selectedDate != null && selectedTime != null) {
         combinedDateTime = DateTime(
           selectedDate!.year,
@@ -288,22 +276,24 @@ class _AddTaskWidgetState extends State<AddTaskWidget> {
       }
 
       var taskModel = TaskModel(
-        title: title,
-        completionDate:
-            DateFormat('dd/MM/yyyy - HH:mm:ss').format(combinedDateTime),
-        creationDate:
-            DateFormat('dd/MM/yyyy - HH:mm:ss').format(DateTime.now()),
-        state: TaskState.pending,
-        description: description,
-        userId: user.id,
-      );
+          title: title.isNotEmpty ? title : localTaskModel.title,
+          completionDate: combinedDateTime != null
+              ? DateFormat('dd/MM/yyyy - HH:mm:ss').format(combinedDateTime)
+              : localTaskModel.completionDate,
+          creationDate: localTaskModel.completionDate ??
+              DateFormat('dd/MM/yyyy - HH:mm:ss').format(DateTime.now()),
+          state: localTaskModel.state ?? TaskState.pending,
+          description:
+              description.isNotEmpty ? description : localTaskModel.description,
+          userId: user.id,
+          id: localTaskModel.id);
 
-      await addTask(taskModel);
+      await editTask(taskModel);
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Tarefa adicionada com sucesso!',
+            'Tarefa editada com sucesso!',
             style: TextStyle(
               color: Colors.blueGrey.shade900,
             ),
@@ -315,7 +305,7 @@ class _AddTaskWidgetState extends State<AddTaskWidget> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Erro ao adicionar tarefa: $e',
+            'Erro ao editar tarefa: $e',
             style: TextStyle(
               color: Colors.blueGrey.shade900,
             ),

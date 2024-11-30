@@ -1,22 +1,42 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:quickstart/config/notification_configuration.dart';
 import 'package:quickstart/models/task_model.dart';
 import 'package:quickstart/pages/settings_page.dart';
+import 'package:quickstart/pages/settings_page.dart';
 import 'package:quickstart/pages/task_list_page.dart';
+import 'package:quickstart/sqlite/sqlite_repository.dart';
 import 'package:quickstart/widgets/add_task_widget.dart';
+import 'package:quickstart/widgets/default_colors.dart';
 import 'package:stylish_bottom_bar/stylish_bottom_bar.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  HomePage({super.key, required this.dbHelper});
+
+  DatabaseConfiguration dbHelper;
+
+  static String tag = '/home';
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<HomePage> createState() => _HomePageState(dbHelper);
 }
 
 class _HomePageState extends State<HomePage> {
-  List<TaskModel> taskList = [];
+  _HomePageState(this.dbHelper);
+
+  DatabaseConfiguration dbHelper;
+  final notificationConfig = NotificationConfig();
+
+  final GlobalKey<TaskListPageState> taskListKey = GlobalKey<TaskListPageState>();
+
   int selected = 0;
   final controller = PageController();
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -27,27 +47,51 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: true,
+      // extendBody: true,
       bottomNavigationBar: StylishBottomBar(
+        backgroundColor: DefaultColors.navbarBackground,
+        elevation: 0,
         option: AnimatedBarOptions(
           barAnimation: BarAnimation.fade,
-          iconStyle: IconStyle.animated,
-          opacity: 0.3,
+          iconStyle: IconStyle.Default,
+          inkColor: DefaultColors.navbarBackground,
+          opacity: 0.5,
         ),
         items: [
           BottomBarItem(
             icon: const Icon(
-              Icons.task_sharp,
+              Icons.list,
             ),
-            title: const Text('Tarefas'),
+            selectedColor: DefaultColors.navbarSelectedIcons,
+            unSelectedColor: DefaultColors.navbarIcons,
+            title: const Text(
+              'Tarefas',
+              style: TextStyle(),
+            ),
+          ),
+          BottomBarItem(
+            icon: InkWell(
+              onTap: _showDialog,
+              child: const Icon(
+                Icons.add_rounded,
+              ),
+            ),
+            selectedColor: DefaultColors.navbarSelectedIcons,
+            unSelectedColor: DefaultColors.navbarIcons,
+            title: InkWell(
+              onTap: _showDialog,
+              child: const Text(
+                'Nova Tarefa',
+                style: TextStyle(),
+              ),
+            ),
           ),
           BottomBarItem(
             icon: const Icon(
               Icons.settings,
             ),
-            selectedIcon: const Icon(
-              Icons.settings,
-            ),
+            selectedColor: DefaultColors.navbarSelectedIcons,
+            unSelectedColor: DefaultColors.navbarIcons,
             title: const Text(
               'Configuração',
             ),
@@ -56,33 +100,26 @@ class _HomePageState extends State<HomePage> {
         iconSpace: 5.0,
         hasNotch: true,
         currentIndex: selected,
-        notchStyle: NotchStyle.square,
+        notchStyle: NotchStyle.themeDefault,
         onTap: (index) {
+          if (index == 1) {
+            _showDialog;
+            return;
+          }
           controller.animateToPage(index,
-              duration: Duration(milliseconds: 300),
+              duration: const Duration(milliseconds: 300),
               curve: Curves.easeInOut);
+
           setState(() {
             selected = index;
           });
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            _showDialog();
-          });
-        },
-        backgroundColor: Colors.white,
-        child: const Icon(
-          CupertinoIcons.add,
-          color: Colors.green,
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       body: SafeArea(
         child: PageView(
           controller: controller,
           onPageChanged: (index) {
+            if (index == 1) index++;
             // Atualiza o índice 'selected' quando deslizar para a direita/esquerda
             setState(() {
               selected = index;
@@ -90,11 +127,12 @@ class _HomePageState extends State<HomePage> {
           },
           children: [
             Center(
-              child: TaskListPage(
-                taskList: taskList,
-              ),
+              child: TaskListPage(key: taskListKey),
             ),
-            const Center(child: SettingsPage()),
+            Center(
+                child: SettingsPage(
+              dbHelper: dbHelper,
+            )),
           ],
         ),
       ),
@@ -113,9 +151,9 @@ class _HomePageState extends State<HomePage> {
             bottom: MediaQuery.of(context).viewInsets.bottom,
           ),
           child: Container(
-            decoration: const BoxDecoration(
-              color: Color(0xFFF4F4F9),
-              borderRadius: BorderRadius.only(
+            decoration: BoxDecoration(
+              color: DefaultColors.background,
+              borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(30),
                 topRight: Radius.circular(30),
               ),
@@ -130,7 +168,7 @@ class _HomePageState extends State<HomePage> {
                     height: 5,
                     margin: const EdgeInsets.symmetric(vertical: 10),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF595959),
+                      color: DefaultColors.title,
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
@@ -144,9 +182,18 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void addTask(TaskModel taskModel) {
-    setState(() {
-      taskList.add(taskModel);
-    });
+  void addTask(TaskModel taskModel) async {
+    final int id = await dbHelper.addTask(taskModel);
+    if(taskModel.completionDate != null && taskModel.completionDate!.isNotEmpty) {
+      String dateString = taskModel.completionDate!; // Exemplo de data no formato definido
+      DateFormat format = DateFormat('dd/MM/yyyy - HH:mm:ss');
+
+      DateTime parsedDate = format.parse(dateString);
+
+      notificationConfig.scheduleNotifications(id, taskModel.title!, parsedDate);
+    }
+    Navigator.of(context).pop();
+    taskListKey.currentState?.updatePage();
+    setState(() {});
   }
 }
