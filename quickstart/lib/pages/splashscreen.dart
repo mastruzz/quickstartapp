@@ -13,7 +13,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
-
   late AnimationController _controller;
   late Animation<double> _animation;
 
@@ -40,62 +39,61 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return SafeArea(
       child: Scaffold(
         backgroundColor: DefaultColors.background,
         body: Stack(
           children: [
             Positioned(
-              top: -5,
-              left: -42,
+              top: screenHeight * -0.02,
+              left: screenWidth * -0.1,
               child: Image.asset(
                 'assets/images/cir_verd1.png',
-                width: 200,
-                height: 200,
+                width: screenWidth * 0.3,
+                height: screenWidth * 0.3,
               ),
             ),
             Positioned(
-              top: 50,
-              left: -65,
+              top: screenHeight * 0.05,
+              left: screenWidth * -0.15,
               child: Image.asset(
                 'assets/images/cir_cinza1.png',
-                width: 200,
-                height: 200,
+                width: screenWidth * 0.3,
+                height: screenWidth * 0.3,
               ),
             ),
-
             Positioned(
               top: 0,
               right: 0,
               child: Image.asset(
                 'assets/images/cir_2.png',
-                width: 200,
-                height: 200,
+                width: screenWidth * 0.3,
+                height: screenWidth * 0.3,
               ),
             ),
-
             Positioned(
-              bottom: -90,
-              right: -20,
+              bottom: screenHeight * -0.1,
+              right: screenWidth * -0.05,
               child: Image.asset(
                 'assets/images/cir_4.png',
-                width: 370,
-                height: 380,
+                width: screenWidth * 0.6,
+                height: screenWidth * 0.6,
               ),
             ),
-
             Center(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-
                   Image.asset(
                     'assets/images/logo.png',
-                    width: 100,
-                    height: 100,
+                    width: screenWidth * 0.2,
+                    height: screenWidth * 0.2,
                   ),
-                  const SizedBox(width: 20),
+                  SizedBox(width: screenWidth * 0.05),
                   const Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
